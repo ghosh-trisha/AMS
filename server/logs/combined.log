@@ -193,3 +193,34 @@
 {"level":"error","message":"res is not defined","stack":"ReferenceError: res is not defined\n    at C:\\Users\\hp\\OneDrive\\Desktop\\makaut\\AMS\\server\\routes\\adminRoutes.js:9:5\n    at Layer.handle [as handle_request] (C:\\Users\\hp\\OneDrive\\Desktop\\makaut\\AMS\\server\\node_modules\\express\\lib\\router\\layer.js:95:5)\n    at next (C:\\Users\\hp\\OneDrive\\Desktop\\makaut\\AMS\\server\\node_modules\\express\\lib\\router\\route.js:149:13)\n    at Route.dispatch (C:\\Users\\hp\\OneDrive\\Desktop\\makaut\\AMS\\server\\node_modules\\express\\lib\\router\\route.js:119:3)\n    at Layer.handle [as handle_request] (C:\\Users\\hp\\OneDrive\\Desktop\\makaut\\AMS\\server\\node_modules\\express\\lib\\router\\layer.js:95:5)\n    at C:\\Users\\hp\\OneDrive\\Desktop\\makaut\\AMS\\server\\node_modules\\express\\lib\\router\\index.js:284:15\n    at Function.process_params (C:\\Users\\hp\\OneDrive\\Desktop\\makaut\\AMS\\server\\node_modules\\express\\lib\\router\\index.js:346:12)\n    at next (C:\\Users\\hp\\OneDrive\\Desktop\\makaut\\AMS\\server\\node_modules\\express\\lib\\router\\index.js:280:10)\n    at Function.handle (C:\\Users\\hp\\OneDrive\\Desktop\\makaut\\AMS\\server\\node_modules\\express\\lib\\router\\index.js:175:3)\n    at router (C:\\Users\\hp\\OneDrive\\Desktop\\makaut\\AMS\\server\\node_modules\\express\\lib\\router\\index.js:47:12)","status":"error","statusCode":500,"timestamp":"2025-03-13T05:45:18.480Z"}
 {"level":"error","message":"res is not defined","stack":"ReferenceError: res is not defined\n    at C:\\Users\\hp\\OneDrive\\Desktop\\makaut\\AMS\\server\\routes\\adminRoutes.js:9:5\n    at Layer.handle [as handle_request] (C:\\Users\\hp\\OneDrive\\Desktop\\makaut\\AMS\\server\\node_modules\\express\\lib\\router\\layer.js:95:5)\n    at next (C:\\Users\\hp\\OneDrive\\Desktop\\makaut\\AMS\\server\\node_modules\\express\\lib\\router\\route.js:149:13)\n    at Route.dispatch (C:\\Users\\hp\\OneDrive\\Desktop\\makaut\\AMS\\server\\node_modules\\express\\lib\\router\\route.js:119:3)\n    at Layer.handle [as handle_request] (C:\\Users\\hp\\OneDrive\\Desktop\\makaut\\AMS\\server\\node_modules\\express\\lib\\router\\layer.js:95:5)\n    at C:\\Users\\hp\\OneDrive\\Desktop\\makaut\\AMS\\server\\node_modules\\express\\lib\\router\\index.js:284:15\n    at Function.process_params (C:\\Users\\hp\\OneDrive\\Desktop\\makaut\\AMS\\server\\node_modules\\express\\lib\\router\\index.js:346:12)\n    at next (C:\\Users\\hp\\OneDrive\\Desktop\\makaut\\AMS\\server\\node_modules\\express\\lib\\router\\index.js:280:10)\n    at Function.handle (C:\\Users\\hp\\OneDrive\\Desktop\\makaut\\AMS\\server\\node_modules\\express\\lib\\router\\index.js:175:3)\n    at router (C:\\Users\\hp\\OneDrive\\Desktop\\makaut\\AMS\\server\\node_modules\\express\\lib\\router\\index.js:47:12)","status":"error","statusCode":500,"timestamp":"2025-03-13T05:48:24.838Z"}
 {"level":"info","message":"MongoDB connection established","timestamp":"2025-03-13T05:48:51.666Z"}
+{"level":"info","message":"MongoDB connection established","timestamp":"2025-03-13T05:59:21.578Z"}
+{"level":"info","message":"MongoDB connection established","timestamp":"2025-03-13T05:59:27.493Z"}
+{"level":"info","message":"MongoDB connection established","timestamp":"2025-03-13T05:59:36.148Z"}
+{"level":"info","message":"MongoDB connection established","timestamp":"2025-03-13T05:59:48.320Z"}
+{"level":"info","message":"MongoDB connection established","timestamp":"2025-03-13T05:59:55.276Z"}
+{"level":"info","message":"MongoDB connection established","timestamp":"2025-03-13T06:00:17.228Z"}
+{"level":"info","message":"MongoDB connection established","timestamp":"2025-03-13T06:00:25.907Z"}
+{"level":"info","message":"MongoDB connection established","timestamp":"2025-03-13T06:00:37.049Z"}
+{"level":"info","message":"MongoDB connection established","timestamp":"2025-03-13T06:00:45.426Z"}
+{"level":"info","message":"MongoDB connection established","timestamp":"2025-03-13T06:01:12.648Z"}
+{"level":"info","message":"MongoDB connection established","timestamp":"2025-03-13T06:01:19.984Z"}
+{"level":"info","message":"MongoDB connection established","timestamp":"2025-03-13T06:01:26.667Z"}
+{"level":"info","message":"MongoDB connection established","timestamp":"2025-03-13T06:01:33.093Z"}
+{"level":"info","message":"MongoDB connection established","timestamp":"2025-03-13T06:09:11.388Z"}
+{"level":"info","message":"MongoDB connection established","timestamp":"2025-03-13T06:09:20.147Z"}
+{"level":"info","message":"MongoDB connection established","timestamp":"2025-03-13T06:10:17.354Z"}
+{"level":"info","message":"MongoDB connection established","timestamp":"2025-03-13T06:10:23.612Z"}
+{"level":"info","message":"MongoDB connection established","timestamp":"2025-03-13T06:10:43.508Z"}
+{"level":"info","message":"MongoDB connection established","timestamp":"2025-03-13T06:11:56.780Z"}
+{"level":"info","message":"MongoDB connection established","timestamp":"2025-03-13T06:14:09.110Z"}
+{"level":"info","message":"MongoDB connection established","timestamp":"2025-03-13T06:14:41.730Z"}
+{"level":"info","message":"MongoDB connection established","timestamp":"2025-03-13T06:14:51.635Z"}
+{"level":"info","message":"MongoDB connection established","timestamp":"2025-03-13T06:14:54.063Z"}
+{"level":"info","message":"MongoDB connection established","timestamp":"2025-03-13T06:14:57.078Z"}
+{"level":"info","message":"MongoDB connection established","timestamp":"2025-03-13T06:16:09.437Z"}
+{"level":"info","message":"MongoDB connection established","timestamp":"2025-03-13T06:16:53.574Z"}
+{"level":"info","message":"MongoDB connection established","timestamp":"2025-03-13T06:17:16.814Z"}
+{"level":"info","message":"MongoDB connection established","timestamp":"2025-03-13T06:18:25.581Z"}
+{"level":"info","message":"MongoDB connection established","timestamp":"2025-03-13T06:18:50.366Z"}
+{"level":"info","message":"MongoDB connection established","timestamp":"2025-03-13T06:19:31.954Z"}
+{"level":"info","message":"MongoDB connection established","timestamp":"2025-03-13T06:19:49.223Z"}
