@@ -3,13 +3,14 @@ import { useParams } from "react-router-dom";
 import Loader from "../basic/Loader";
 import axios from "axios";
 import CreateScheduleModal from "./CreateScheduleModal";
+import CreateSyllabusModal from "./CreateSllyabusModal";
 
 const ClassroomInfo = ({semesterId, currSessionId}) => {
 
     
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-    const [showAddPaperModal, setShowAddPaperModal] = useState(false);
+    const [showSllaybusCreateModal, setSllabusCreateModal] = useState(false);
     const [showCreateSchedule, setShowCreateSchedule] = useState(false);
     const [classroom, setClassroom] = useState(null);
   
@@ -62,9 +63,9 @@ return (
           <div className="flex flex-col gap-3">
             <button
               className="bg-emerald-500 hover:bg-emerald-600 text-white px-4 py-2 rounded-lg transition-all transform hover:scale-105 cursor-pointer"
-              onClick={() => setShowAddPaperModal(true)}
+              onClick={() => setSllabusCreateModal(true)}
             >
-              Add Paper
+              Create new Sllaybus
             </button>
             <button
               className="bg-amber-500 hover:bg-amber-600 text-white px-4 py-2 rounded-lg transition-all transform hover:scale-105 cursor-pointer"
@@ -75,12 +76,8 @@ return (
           </div>
 
           {/* Modals */}
-          {showAddPaperModal && (
-            <AddPaperModal
-              classroomId={id}
-              onClose={() => setShowAddPaperModal(false)}
-              onPaperAdded={handlePaperAdded}
-            />
+          {showSllaybusCreateModal && (
+          < CreateSyllabusModal/>
           )}
 
           {showCreateSchedule && (

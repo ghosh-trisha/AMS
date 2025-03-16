@@ -9,9 +9,11 @@ const CreateScheduleModal = ({ currSessionId, onClose, onScheduleCreated }) => {
   const [selectedSubject, setSelectedSubject] = useState(null);
   const [loading, setLoading] = useState(false);
   const  [subjectLoader, setSubjectLoader]=useState(false)
+  const  [teacherLoader, setTeacherLoader]=useState(false)
   const [error, setError] = useState(null);
   const [scheduleEntries, setScheduleEntries] = useState([]);
   const [subjects , setSubjects]=useState([]);
+  const [teachers , setTeachers]=useState([]);
 
   // Demo data
   const demoSubjects = [
@@ -31,10 +33,7 @@ const CreateScheduleModal = ({ currSessionId, onClose, onScheduleCreated }) => {
   //   label: `${subject.name} (${subject.code})`
   // }));
 
-  const teachers = demoTeachers.map(teacher => ({
-    value: teacher._id,
-    label: `${teacher.first_name} ${teacher.last_name}`
-  }));
+ 
 
   const weekdays = [
     { value: 'Monday', label: 'Monday' },
@@ -76,6 +75,23 @@ const CreateScheduleModal = ({ currSessionId, onClose, onScheduleCreated }) => {
 
    setSubjectLoader(false)
   }
+
+
+  const fetchTeachers=async()=>{
+    setTeacherLoader(true)
+    const res = await axios.get(`http://localhost:8080/api/admin/teachers/all/`);
+    console.log(res)
+    const data=res.data.data.map((teacher)=>{
+     return{
+          value: teacher._id,
+     label: `${teacher.name} (${teacher.phone})`
+     }
+    });
+    console.log(data)
+    setTeachers(data);
+    setTeacherLoader(false)
+
+  }
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!selectedSubject || scheduleEntries.length === 0) return;
@@ -111,6 +127,7 @@ const CreateScheduleModal = ({ currSessionId, onClose, onScheduleCreated }) => {
   };
 useEffect(()=>{
 fetchSubjects();
+fetchTeachers()
 },[currSessionId])
   return (
     <div className="fixed inset-0 backdrop-blur-[1px] flex items-center justify-center p-4 z-20">
@@ -202,6 +219,8 @@ fetchSubjects();
                     isMulti
                     options={teachers}
                     value={entry.selectedTeachers}
+                    loading={teacherLoader}
+                    loadingMessage={"loading teachers"}
                     onChange={(selected) => updateScheduleEntry(index, 'selectedTeachers', selected)}
                     placeholder="Select teachers..."
                     styles={customSelectStyles}

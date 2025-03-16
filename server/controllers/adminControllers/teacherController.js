@@ -1,4 +1,6 @@
 const Teacher = require('../../models/Teacher');
+const catchAsync = require('../../utils/catchAsync');
+const ApiError = require('../../utils/ApiError');
 
 // Controller function to get all teachers
 exports.getAllTeachers =catchAsync( async (req, res, next) => {
@@ -9,9 +11,9 @@ exports.getAllTeachers =catchAsync( async (req, res, next) => {
                 return next(new ApiError('Teachers not found', 404));}
         res.status(200).json({
             status: 'success',
-            data: {
+            data: 
                 teachers
-            }
+        
         });
    
 })
