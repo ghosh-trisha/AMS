@@ -1,9 +1,12 @@
-
 import './App.css';
+import ProtectedRoutes from './pages/ProtectedRoutes';
+import { Toaster } from 'react-hot-toast';
+
 function App() {
   return (
     <>
-    <div>AMS</div>
+    <ProtectedRoutes />
+    <Toaster/>
     </>
   );
 }
