@@ -4,7 +4,7 @@ import Loader from "../basic/Loader";
 import axios from "axios";
 import CreateScheduleModal from "./CreateScheduleModal";
 
-const ClassroomInfo = ({semesterId}) => {
+const ClassroomInfo = ({semesterId, currSessionId}) => {
 
     
     const [loading, setLoading] = useState(true);
@@ -44,13 +44,13 @@ const ClassroomInfo = ({semesterId}) => {
             return <div className="p-6">Classroom not found</div>;
           }
 return (
-
     <div className="bg-gradient-to-r from-blue-500 to-blue-600 text-white p-6 rounded-xl shadow-lg mb-6">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
           <div className="space-y-2">
             <h1 className="text-2xl font-bold">{classroom.department?.name}</h1>
             <p className="text-blue-100">Department: {classroom.department?.name}</p>
           </div>
+         
           <div className="space-y-2">
             <p>Program: {classroom.program?.name}</p>
             <p>Level: {classroom.level?.name}</p>
@@ -85,7 +85,7 @@ return (
 
           {showCreateSchedule && (
             <CreateScheduleModal
-              classroomId={semesterId}
+            currSessionId={currSessionId}
               onClose={() => setShowCreateSchedule(false)}
               onScheduleCreated={()=>{
                 
