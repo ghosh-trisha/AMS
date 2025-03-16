@@ -7,7 +7,8 @@ const semesterController = require('../controllers/adminControllers/semesterCont
 const categoryController = require('../controllers/adminControllers/categoryController');
 const syllabusController = require('../controllers/adminControllers/syllabusController');
 const sessionController = require('../controllers/adminControllers/sessionController');
-
+const teacherController =require('../controllers/teacherController/teacherController');
+const scheduleController = require('../controllers/adminControllers/scheduleController');
 const router = express.Router();
 
 
@@ -52,11 +53,21 @@ router.get('/categories', categoryController.getAllCategories);
 // Syllabus routes
 router.post('/syllabus', syllabusController.createSyllabus);
 router.get('/syllabus/:semesterId', syllabusController.getAllSyllabusBySemester);
+router.get('/syllabus/subjects/:sessionId', syllabusController.getAllSyllabusBySession);
 
 
 // Session routes
 router.post('/sessions', sessionController.createSession);
 router.get('/sessions/:semesterId', sessionController.getAllSessionsBySemester);
+
+
+// schedule routes
+router.post('/schedule', scheduleController.createSchedule);
+router.get('/schedule/:sessionId', scheduleController.getAllSchedulesBySession);
+
+
+//teacher routes
+router.get('/teachers/all',teacherController.getAllTeachers );
 
 
 module.exports = router;

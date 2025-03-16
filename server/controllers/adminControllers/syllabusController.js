@@ -3,6 +3,7 @@ const ApiError = require('../../utils/ApiError');
 const Syllabus = require('../../models/Syllabus');
 const Subject = require('../../models/Subject');
 const Semester = require('../../models/Semester');
+const Session = require('../../models/Session');
 
 exports.createSyllabus = catchAsync(async (req, res, next) => {
     const { name, semesterId, subjects } = req.body;
@@ -75,4 +76,45 @@ exports.getAllSyllabusBySemester = catchAsync(async (req, res, next) => {
         results: syllabusWithSubjects.length,
         data: syllabusWithSubjects,
     });
-});
+})
+
+
+exports.getAllSyllabusBySession = catchAsync(async (req, res, next) => {
+    const { sessionId } = req.params;
+
+    if (!sessionId) {
+        return next(new ApiError('Session ID is required', 400));
+    }
+    const session = await Session.findById(sessionId).select("syllabusId");
+    console.log(session);
+
+    if (!session) {
+        return next(new ApiError('Session not found', 404));
+    }
+
+    const syllabusId = session.syllabusId;
+
+
+
+    let subjects = await Subject.find({ syllabusId })
+        .select('-createdAt -updatedAt -__v')
+        .populate({ path: 'categoryId', select: 'name' });
+    subjects = subjects.map((subject) => {
+        return {
+            _id: subject._id,
+            name: subject.name,
+            category: subject.categoryId.name,
+            code: subject.code
+        }
+    })
+
+
+    res.status(200).json({
+        status: 'success',
+        results: subjects.length,
+        data: subjects,
+
+    });
+}
+
+);

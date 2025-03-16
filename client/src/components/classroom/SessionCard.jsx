@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 
-const SessionCard = ({ semesterId }) => {
+const SessionCard = ({ semesterId ,setCurrSessionId}) => {
   const [showRoutine, setShowRoutine] = useState(false);
   const [showCurrSession, setShowCurrSession] = useState(false);
   const [showPrevSession, setShowPrevSession] = useState(false);
@@ -17,6 +17,7 @@ const SessionCard = ({ semesterId }) => {
         // Assuming the response structure:
         // { status: 'success', data: { currentSession, previousSessions }, results: <number> }
         setSessionData(res.data.data);
+        setCurrSessionId(res.data.data.currentSession._id)
       } catch (err) {
         setError(err.response?.data?.message || "Something went wrong");
       } finally {

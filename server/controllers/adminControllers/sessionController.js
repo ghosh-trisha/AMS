@@ -57,7 +57,7 @@ exports.getAllSessionsBySemester = catchAsync(async (req, res, next) => {
     // Get all sessions for the semester sorted by createdAt descending.
     // Note: We are sorting by createdAt even if we later deselect it.
     const sessions = await Session.find({ semesterId })
-        .sort({ createdAt: -1 })
+        .sort({ createdAt: 1 })
         .populate({
             path: 'syllabusId',
             select: 'name'

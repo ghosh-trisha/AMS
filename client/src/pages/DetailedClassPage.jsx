@@ -18,6 +18,9 @@ const DetailedDemoClassroom = () => {
   
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [paperToDelete, setPaperToDelete] = useState(null);
+
+  // const [showPrevSession, setshowPrevSession] = useState(false);
+  const [currSessionId, setCurrSessionId] = useState(null);
  
 
   const demoPapers = [
@@ -68,13 +71,13 @@ const DetailedDemoClassroom = () => {
   return (
     <div className="p-6">
       {/* Classroom Header Section */}
-      <ClassroomInfo semesterId={semesterId}/>
+      <ClassroomInfo semesterId={semesterId} currSessionId={currSessionId}/>
 
       {/* Syllabuses Section */}
       <SyllabusesCard semesterId={semesterId}  />
 
       {/* Sessions Section */}
-      <SessionCard semesterId={semesterId} />
+      <SessionCard semesterId={semesterId}  setCurrSessionId={setCurrSessionId} />
 
       {/* Delete Confirmation Modal */}
       {showDeleteModal && (

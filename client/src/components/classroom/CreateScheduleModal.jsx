@@ -1,15 +1,17 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Select from 'react-select';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import Loader from '../basic/Loader';
 import toast from 'react-hot-toast';
-
-const CreateScheduleModal = ({ classroomId, onClose, onScheduleCreated }) => {
+import axios from 'axios';
+const CreateScheduleModal = ({ currSessionId, onClose, onScheduleCreated }) => {
   const [selectedSubject, setSelectedSubject] = useState(null);
   const [loading, setLoading] = useState(false);
+  const  [subjectLoader, setSubjectLoader]=useState(false)
   const [error, setError] = useState(null);
   const [scheduleEntries, setScheduleEntries] = useState([]);
+  const [subjects , setSubjects]=useState([]);
 
   // Demo data
   const demoSubjects = [
@@ -24,10 +26,10 @@ const CreateScheduleModal = ({ classroomId, onClose, onScheduleCreated }) => {
     { _id: '3', first_name: 'Bob', last_name: 'Johnson' }
   ];
 
-  const subjects = demoSubjects.map(subject => ({
-    value: subject._id,
-    label: `${subject.name} (${subject.code})`
-  }));
+  // const subjects = demoSubjects.map(subject => ({
+  //   value: subject._id,
+  //   label: `${subject.name} (${subject.code})`
+  // }));
 
   const teachers = demoTeachers.map(teacher => ({
     value: teacher._id,
@@ -58,7 +60,22 @@ const CreateScheduleModal = ({ classroomId, onClose, onScheduleCreated }) => {
     newEntries[index][field] = value;
     setScheduleEntries(newEntries);
   };
+  const fetchSubjects=async()=>{
+    setSubjectLoader(true)
+    
+   const res = await axios.get(`http://localhost:8080/api/admin/syllabus/subjects/${currSessionId}`);
+   console.log(res)
+   const data=res.data.data.map((subject)=>{
+    return{
+         value: subject._id,
+    label: `${subject.name} (${subject.code}) [${subject.category}]`
+    }
+   });
+   console.log(data)
+   setSubjects(data);
 
+   setSubjectLoader(false)
+  }
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!selectedSubject || scheduleEntries.length === 0) return;
@@ -92,10 +109,12 @@ const CreateScheduleModal = ({ classroomId, onClose, onScheduleCreated }) => {
       setLoading(false);
     }, 1000);
   };
-
+useEffect(()=>{
+fetchSubjects();
+},[currSessionId])
   return (
     <div className="fixed inset-0 backdrop-blur-[1px] flex items-center justify-center p-4 z-20">
-      <div className="bg-white rounded-lg p-6 w-full max-w-md shadow-lg">
+      <div className="bg-white rounded-lg p-6 w-4xl shadow-lg  max-h-[80vh] overflow-y-scroll overflow-x-auto">
         <h2 className="text-xl text-black font-bold mb-4">Create New Schedule</h2>
         
         <form onSubmit={handleSubmit}>
@@ -107,6 +126,8 @@ const CreateScheduleModal = ({ classroomId, onClose, onScheduleCreated }) => {
               <Select
                 options={subjects}
                 value={selectedSubject}
+                loading={subjectLoader}
+                loadingMessage={"loading subjects"}
                 onChange={setSelectedSubject}
                 placeholder="Search subjects..."
                 isSearchable
@@ -124,9 +145,9 @@ const CreateScheduleModal = ({ classroomId, onClose, onScheduleCreated }) => {
                 Add Schedule
               </button>
             )}
-
+            <div className='grid grid-cols-2 gap-4'>
             {scheduleEntries.map((entry, index) => (
-              <div key={index} className="border p-4 rounded-lg space-y-4">
+              <div key={index} className="border p-4 rounded-lg space-y-4 border-gray-200 min-w-[25rem]">
                 <div>
                   <label className="block text-sm font-medium mb-2 text-gray-700">
                     Weekday
@@ -188,6 +209,7 @@ const CreateScheduleModal = ({ classroomId, onClose, onScheduleCreated }) => {
                 </div>
               </div>
             ))}
+            </div>
           </div>
 
           {error && <div className="text-red-500 mt-4 text-sm">{error}</div>}
