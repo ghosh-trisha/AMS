@@ -1,9 +1,8 @@
 const mongoose = require('mongoose');
 
-const syllabusSchema = new mongoose.Schema({
-    _id: { type: String, required: true },
-    name: { type: String, required: true, unique: true },
-    semesterId: { type: String, ref: 'Semester', required: true }
+const syllabusSchema = new mongoose.Schema({ 
+    name: { type: Number, required: true, unique: true },
+    semesterId: { type: mongoose.Schema.Types.ObjectId, ref: 'Semester', required: true }
 }, {
     timestamps: true
 });

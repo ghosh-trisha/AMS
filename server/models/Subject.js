@@ -1,10 +1,10 @@
 const mongoose = require('mongoose');
 
-const subjectSchema = new mongoose.Schema({
-    _id: { type: String, required: true },
+const subjectSchema = new mongoose.Schema({ 
     name: { type: String, required: true, unique: true },
-    syllabusId: { type: String, ref: 'Syllabus', required: true },
-    categoryId: { type: String, ref: 'Category', required: true }
+    code: { type: String, required: true, unique: true },
+    syllabusId: { type: mongoose.Schema.Types.ObjectId, ref: 'Syllabus', required: true },
+    categoryId: { type: mongoose.Schema.Types.ObjectId, ref: 'Category', required: true }
 }, {
     timestamps: true
 });

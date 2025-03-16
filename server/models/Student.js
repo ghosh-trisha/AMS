@@ -1,11 +1,10 @@
 const mongoose = require('mongoose');
 
-const studentSchema = new mongoose.Schema({
-    _id: { type: String, required: true },
+const studentSchema = new mongoose.Schema({ 
     name: { type: String, required: true },
     email: { type: String, required: true, unique: true },
     phone: { type: String, required: true },
-    sessionId: { type: String, ref: 'Session', required: true },
+    sessionId: { type: mongoose.Schema.Types.ObjectId, ref: 'Session', required: true },
     promote_flag: { type: Boolean, default: false },
     isVerified: { type: Boolean, default: false }
 }, {

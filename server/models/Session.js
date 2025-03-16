@@ -1,10 +1,9 @@
 const mongoose = require('mongoose');
 
-const sessionSchema = new mongoose.Schema({
-    _id: { type: String, required: true },
-    academicYear: { type: String, required: true },
-    syllabusId: { type: String, ref: 'Syllabus', required: true },
-    semesterId: { type: String, ref: 'Semester', required: true }
+const sessionSchema = new mongoose.Schema({ 
+    academicYear: { type: String, required: true, unique: true },
+    syllabusId: { type: mongoose.Schema.Types.ObjectId, ref: 'Syllabus', required: true },
+    semesterId: { type: mongoose.Schema.Types.ObjectId, ref: 'Semester', required: true }
 }, {
     timestamps: true
 });
