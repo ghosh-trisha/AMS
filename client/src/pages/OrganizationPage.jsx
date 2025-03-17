@@ -27,6 +27,22 @@ const OrganizationPage = () => {
           className="w-64 h-40 bg-green-500 text-white rounded-lg shadow-lg flex flex-col items-center justify-center cursor-pointer transform transition duration-300 hover:scale-105 hover:bg-green-600">
           <span className="text-xl font-semibold"> 👀 View Classes</span>
         </div>
+
+        <div 
+          className="w-64 h-40 bg-amber-500 text-white rounded-lg shadow-lg flex flex-col items-center justify-center cursor-pointer transform transition duration-300 hover:scale-105 hover:bg-blue-600">
+          <span className="text-xl font-semibold"> 📚 Create Syllabus</span>
+        </div>
+
+        <div 
+          className="w-64 h-40 bg-pink-500 text-white rounded-lg shadow-lg flex flex-col items-center justify-center cursor-pointer transform transition duration-300 hover:scale-105 hover:bg-blue-600">
+          <span className="text-xl font-semibold"> 📚 Create Session</span>
+        </div>
+
+        <div 
+          className="w-64 h-40 bg-emerald-500 text-white rounded-lg shadow-lg flex flex-col items-center justify-center cursor-pointer transform transition duration-300 hover:scale-105 hover:bg-blue-600">
+          <span className="text-xl font-semibold"> 📚 Create Schedule</span>
+        </div>
+
       </div>
       <CreateCourseModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
       <ViewClassroomModal isOpen={isViewModalOpen} onClose={() => setIsViewModalOpen(false)} />

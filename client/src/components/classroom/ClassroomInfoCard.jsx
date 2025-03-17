@@ -4,6 +4,7 @@ import Loader from "../basic/Loader";
 import axios from "axios";
 import CreateScheduleModal from "./CreateScheduleModal";
 import CreateSyllabusModal from "./CreateSllyabusModal";
+import CreateSessionModal from "./CreateSessionModal"
 
 const ClassroomInfo = ({semesterId, currSessionId}) => {
 
@@ -11,6 +12,7 @@ const ClassroomInfo = ({semesterId, currSessionId}) => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [showSllaybusCreateModal, setSllabusCreateModal] = useState(false);
+    const [showSessionCreateModal, setSessionCreateModal] = useState(false);
     const [showCreateSchedule, setShowCreateSchedule] = useState(false);
     const [classroom, setClassroom] = useState(null);
   
@@ -73,11 +75,28 @@ return (
             >
               Add Schedule
             </button>
+
+            <button
+              className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg transition-all transform hover:scale-105 cursor-pointer"
+              onClick={() => setSessionCreateModal(true)}
+            >
+              Create new Session
+            </button>
           </div>
 
           {/* Modals */}
+
+          {showSessionCreateModal && (
+          < CreateSessionModal
+          onClose={()=>setSessionCreateModal(false)}
+          semesterId={semesterId}
+          />
+          )}
           {showSllaybusCreateModal && (
-          < CreateSyllabusModal/>
+          < CreateSyllabusModal
+          onClose={()=>setSllabusCreateModal(false)}
+          semesterId={semesterId}
+          />
           )}
 
           {showCreateSchedule && (

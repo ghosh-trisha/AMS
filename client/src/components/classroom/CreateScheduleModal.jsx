@@ -5,6 +5,7 @@ import 'react-datepicker/dist/react-datepicker.css';
 import Loader from '../basic/Loader';
 import toast from 'react-hot-toast';
 import axios from 'axios';
+import formatTime from '../../utils/formatDate';
 const CreateScheduleModal = ({ currSessionId, onClose, onScheduleCreated }) => {
   const [selectedSubject, setSelectedSubject] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -106,25 +107,35 @@ const CreateScheduleModal = ({ currSessionId, onClose, onScheduleCreated }) => {
     }
 
     setLoading(true);
-    
-    // Simulate API call delay
-    setTimeout(() => {
-      const demoResponse = scheduleEntries.map((entry, index) => ({
-        _id: `demo-${index}-${Date.now()}`,
-        classroom_id: classroomId,
-        subject_id: selectedSubject.value,
-        teachers: entry.selectedTeachers.map(t => t.value),
-        start_time: entry.startTime.toISOString(),
-        end_time: entry.endTime.toISOString(),
-        weekday: entry.weekday.value
-      }));
+    const data={
+      sessionId:currSessionId,
+      subjectId:selectedSubject.value,
+      schedule:[
+        ...scheduleEntries.map((entry) => {
+          return {
+            day: entry.weekday.value,
+            start_time:formatTime( entry.startTime),
+            end_time:formatTime(  entry.endTime),
+            teacherIds:entry.selectedTeachers.map((teacher)=>teacher.value)
+            }
+            }
+          )
+            
+      ]
+    }
+    console.log(data)
+    const res = await axios.post(`http://localhost:8080/api/admin/schedule`,data,{
+      headers: {
+          'Content-Type': 'application/json'}})
+      console.log("lknbv")
+     if(res){
+       onClose();
+       toast.success(' schedules created successfully');
 
-      onScheduleCreated(demoResponse);
-      onClose();
-      toast.success('Demo schedules created successfully');
+     }
       setLoading(false);
-    }, 1000);
-  };
+    }
+  
 useEffect(()=>{
 fetchSubjects();
 fetchTeachers()
