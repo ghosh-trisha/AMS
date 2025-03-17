@@ -3,8 +3,10 @@ import axios from 'axios';
 import { toast } from 'react-hot-toast';
 import Loader from '../components/basic/Loader';
 import { format, parseISO } from 'date-fns';
+import { useParams } from 'react-router-dom';
 
-const StudentClassesPage = ({ studentId }) => {
+const StudentClassesPage = () => {
+    const {id}=useParams();
   const [classes, setClasses] = useState([]);
   const [loading, setLoading] = useState(true);
   const [attendanceLoading, setAttendanceLoading] = useState(false);
@@ -13,7 +15,9 @@ const StudentClassesPage = ({ studentId }) => {
   const fetchTodaysClasses = async () => {
     try {
       setLoading(true);
-      const res = await axios.get(`http://localhost:8080/student/classes/${studentId}`);
+      console.log(id)
+      const res = await axios.get(`http://localhost:8080/api/student/classes/${id}`);
+      console.log(res)
       setClasses(res.data.data);
     } catch (error) {
       toast.error('Failed to fetch classes');
@@ -27,6 +31,10 @@ const StudentClassesPage = ({ studentId }) => {
     try {
       setAttendanceLoading(true);
       // Replace with your actual API endpoint for marking attendance
+      const data={
+        studentId:id,
+        
+      }
       await axios.post(`http://localhost:8080/student/attendance`, {
         classId,
         studentId,
@@ -51,7 +59,7 @@ const StudentClassesPage = ({ studentId }) => {
 
   useEffect(() => {
     fetchTodaysClasses();
-  }, [studentId]);
+  }, [id]);
 
   if (loading) {
     return (
@@ -65,7 +73,7 @@ const StudentClassesPage = ({ studentId }) => {
     <div className="p-6 bg-gray-50 min-h-screen">
       <h1 className="text-2xl font-bold text-gray-800 mb-6">Today's Classes</h1>
 
-      <div className="space-y-4">
+      <div className="space-y-4 grid grid-cols-2 gap-4">
         {classes.length === 0 ? (
           <div className="text-center text-gray-500">No classes scheduled for today.</div>
         ) : (
@@ -83,7 +91,15 @@ const StudentClassesPage = ({ studentId }) => {
                   <p className="text-sm text-gray-600">
                     {formatTime(cls.start_time)} - {formatTime(cls.end_time)}
                   </p>
-                  <p className="text-sm text-gray-600">Teacher: {cls.teacherName}</p>
+                  <div className='flex justify-center items-center gap-4'>
+                   
+                  {
+                    cls.teachers.map((teacher)=>{
+                       return <p className="text-sm text-gray-600"> {teacher}</p>
+
+                    })
+                  }
+                  </div>
                 </div>
 
                 <button
