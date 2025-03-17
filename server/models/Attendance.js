@@ -6,10 +6,9 @@ const attendanceSchema = new mongoose.Schema({
     ref: 'Student', 
     required: true 
   },
-  teacherId: { 
+  acceptedBy: { 
     type: mongoose.Schema.Types.ObjectId, 
-    ref: 'Teacher', 
-    required: true 
+    ref: 'Teacher'
   },
   status: { 
     type: String, 
