@@ -61,6 +61,21 @@ const ProtectedRoutes = () => {
               </div>
             </div>
           )}
+
+          {
+            userType == "TEACHER" && (
+              <div className="flex flex-col h-screen">
+
+              </div>
+            )
+          }
+          {
+            userType == "TEACHER" && (
+              <div className="flex flex-col h-screen">
+
+              </div>
+            )
+          }
         </BrowserRouter>
       </>
     ) : (
