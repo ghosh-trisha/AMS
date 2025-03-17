@@ -7,7 +7,7 @@ import Sidebar from "../components/basic/Sidebar";
 import AdminRoutes from "../routes/AdminRoutes";
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import TeacherRoutes from "../routes/TeacherRoutes";
-// import StudentRoutes from "../routes/StudentRoutes";
+import StudentRoutes from "../routes/StudentRoutes";
 
 const ProtectedRoutes = () => {
   const [token, setToken] = useState(Cookies.get("authToken") ?? "kj");
