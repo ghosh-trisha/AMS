@@ -6,13 +6,15 @@ import TopBar from "../components/basic/TopBar";
 import Sidebar from "../components/basic/Sidebar";
 import AdminRoutes from "../routes/AdminRoutes";
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import TeacherRoutes from "../routes/TeacherRoutes";
+// import StudentRoutes from "../routes/StudentRoutes";
 
 const ProtectedRoutes = () => {
   const [token, setToken] = useState(Cookies.get("authToken") ?? "kj");
   //   const { setUserData } = useUserContext();
   const [error, seterror] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [userType, setUserType] = useState("ADMIN");
+  const [userType, setUserType] = useState("TEACHER");
   //   const fetchUserDetails = async () => {
   //     // setLoading(true);
   //     const d1 = new Date(Date.now());
@@ -61,6 +63,20 @@ const ProtectedRoutes = () => {
               </div>
             </div>
           )}
+          {
+            userType == "TEACHER" && (
+              <div className="flex flex-col h-screen">
+                <TeacherRoutes/>
+              </div>
+            )
+          }
+          {
+            userType == "STUDENT" && (
+              <div className="flex flex-col h-screen">
+                <StudentRoutes/>
+              </div>
+            )
+          }
         </BrowserRouter>
       </>
     ) : (

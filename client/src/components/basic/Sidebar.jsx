@@ -27,7 +27,7 @@ const Sidebar = () => {
               to="/admin/teacher" 
               className="block p-2 hover:bg-gray-700 rounded"
             >
-              Schedule
+              Teacher
             </Link>
           </li>
         </ul>

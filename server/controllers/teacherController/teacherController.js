@@ -141,4 +141,4 @@ exports.getTodaysClassesAsTeacher = catchAsync(async (req, res, next) => {
       results: classes.length,
       data: classes
     });
-  });
+});
