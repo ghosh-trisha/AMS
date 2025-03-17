@@ -14,7 +14,7 @@ const ProtectedRoutes = () => {
   //   const { setUserData } = useUserContext();
   const [error, seterror] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [userType, setUserType] = useState("STUDENT");
+  const [userType, setUserType] = useState("ADMIN");
   //   const fetchUserDetails = async () => {
   //     // setLoading(true);
   //     const d1 = new Date(Date.now());
