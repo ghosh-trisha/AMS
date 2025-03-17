@@ -18,3 +18,44 @@
 {"isOperational":true,"level":"error","message":"Session not found","stack":"Error: Session not found\n    at C:\\Users\\hp\\OneDrive\\Desktop\\makaut\\AMS\\server\\controllers\\adminControllers\\syllabusController.js:92:21\n    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)\n    at async C:\\Users\\hp\\OneDrive\\Desktop\\makaut\\AMS\\server\\utils\\catchAsync.js:4:12","status":"error","statusCode":404,"timestamp":"2025-03-16T18:12:26.509Z"}
 {"level":"info","message":"MongoDB connection established","timestamp":"2025-03-16T18:13:59.172Z"}
 {"level":"info","message":"MongoDB connection established","timestamp":"2025-03-16T18:19:47.747Z"}
+{"level":"info","message":"MongoDB connection established","timestamp":"2025-03-16T18:19:52.736Z"}
+{"level":"warn","message":"MongoDB connection disconnected","timestamp":"2025-03-16T18:55:49.827Z"}
+{"level":"info","message":"MongoDB connection established","timestamp":"2025-03-16T18:55:50.017Z"}
+{"level":"warn","message":"MongoDB connection disconnected","timestamp":"2025-03-16T23:00:00.634Z"}
+{"level":"info","message":"MongoDB connection established","timestamp":"2025-03-17T01:45:29.854Z"}
+{"level":"info","message":"MongoDB connection established","timestamp":"2025-03-17T02:04:23.954Z"}
+{"level":"info","message":"MongoDB connection established","timestamp":"2025-03-17T02:04:32.763Z"}
+{"level":"info","message":"MongoDB connection established","timestamp":"2025-03-17T02:05:17.338Z"}
+{"level":"info","message":"MongoDB connection established","timestamp":"2025-03-17T02:06:25.400Z"}
+{"level":"info","message":"MongoDB connection established","timestamp":"2025-03-17T02:06:43.117Z"}
+{"level":"info","message":"MongoDB connection established","timestamp":"2025-03-17T02:06:47.947Z"}
+{"level":"info","message":"MongoDB connection established","timestamp":"2025-03-17T02:07:01.138Z"}
+{"level":"info","message":"MongoDB connection established","timestamp":"2025-03-17T02:22:36.656Z"}
+{"level":"info","message":"MongoDB connection established","timestamp":"2025-03-17T02:23:23.895Z"}
+{"level":"info","message":"MongoDB connection established","timestamp":"2025-03-17T02:26:44.388Z"}
+{"level":"info","message":"MongoDB connection established","timestamp":"2025-03-17T02:27:12.427Z"}
+{"level":"info","message":"MongoDB connection established","timestamp":"2025-03-17T02:28:04.341Z"}
+{"level":"info","message":"MongoDB connection established","timestamp":"2025-03-17T02:28:14.783Z"}
+{"level":"info","message":"MongoDB connection established","timestamp":"2025-03-17T02:30:29.406Z"}
+{"level":"info","message":"MongoDB connection established","timestamp":"2025-03-17T02:30:35.174Z"}
+{"level":"info","message":"MongoDB connection established","timestamp":"2025-03-17T02:30:59.929Z"}
+{"level":"info","message":"MongoDB connection established","timestamp":"2025-03-17T02:31:50.437Z"}
+{"level":"info","message":"MongoDB connection established","timestamp":"2025-03-17T02:37:04.633Z"}
+{"level":"info","message":"MongoDB connection established","timestamp":"2025-03-17T02:40:54.174Z"}
+{"level":"info","message":"MongoDB connection established","timestamp":"2025-03-17T02:41:19.986Z"}
+{"level":"info","message":"MongoDB connection established","timestamp":"2025-03-17T02:51:21.892Z"}
+{"level":"info","message":"MongoDB connection established","timestamp":"2025-03-17T02:51:49.463Z"}
+{"level":"info","message":"MongoDB connection established","timestamp":"2025-03-17T02:52:09.004Z"}
+{"level":"info","message":"MongoDB connection established","timestamp":"2025-03-17T02:56:48.080Z"}
+{"level":"info","message":"MongoDB connection established","timestamp":"2025-03-17T02:57:07.924Z"}
+{"level":"info","message":"MongoDB connection established","timestamp":"2025-03-17T02:58:58.914Z"}
+{"level":"error","message":"mongoose is not defined","stack":"ReferenceError: mongoose is not defined\n    at C:\\Users\\hp\\OneDrive\\Desktop\\makaut\\AMS\\server\\controllers\\studentController\\studentController.js:85:20\n    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)\n    at async C:\\Users\\hp\\OneDrive\\Desktop\\makaut\\AMS\\server\\utils\\catchAsync.js:4:12","status":"error","statusCode":500,"timestamp":"2025-03-17T02:59:03.819Z"}
+{"level":"error","message":"mongoose is not defined","stack":"ReferenceError: mongoose is not defined\n    at C:\\Users\\hp\\OneDrive\\Desktop\\makaut\\AMS\\server\\controllers\\studentController\\studentController.js:85:20\n    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)\n    at async C:\\Users\\hp\\OneDrive\\Desktop\\makaut\\AMS\\server\\utils\\catchAsync.js:4:12","status":"error","statusCode":500,"timestamp":"2025-03-17T02:59:07.113Z"}
+{"level":"info","message":"MongoDB connection established","timestamp":"2025-03-17T02:59:27.797Z"}
+{"level":"error","message":"Class constructor ObjectId cannot be invoked without 'new'","stack":"TypeError: Class constructor ObjectId cannot be invoked without 'new'\n    at C:\\Users\\hp\\OneDrive\\Desktop\\makaut\\AMS\\server\\controllers\\studentController\\studentController.js:86:35\n    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)\n    at async C:\\Users\\hp\\OneDrive\\Desktop\\makaut\\AMS\\server\\utils\\catchAsync.js:4:12","status":"error","statusCode":500,"timestamp":"2025-03-17T02:59:33.449Z"}
+{"level":"error","message":"Class constructor ObjectId cannot be invoked without 'new'","stack":"TypeError: Class constructor ObjectId cannot be invoked without 'new'\n    at C:\\Users\\hp\\OneDrive\\Desktop\\makaut\\AMS\\server\\controllers\\studentController\\studentController.js:86:35\n    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)\n    at async C:\\Users\\hp\\OneDrive\\Desktop\\makaut\\AMS\\server\\utils\\catchAsync.js:4:12","status":"error","statusCode":500,"timestamp":"2025-03-17T02:59:40.144Z"}
+{"level":"info","message":"MongoDB connection established","timestamp":"2025-03-17T03:00:41.962Z"}
+{"level":"info","message":"MongoDB connection established","timestamp":"2025-03-17T03:03:00.411Z"}
+{"level":"info","message":"MongoDB connection established","timestamp":"2025-03-17T03:21:43.532Z"}
+{"level":"error","message":"Schedule is not defined","stack":"ReferenceError: Schedule is not defined\n    at C:\\Users\\hp\\OneDrive\\Desktop\\makaut\\AMS\\server\\controllers\\teacherController\\teacherController.js:32:21\n    at C:\\Users\\hp\\OneDrive\\Desktop\\makaut\\AMS\\server\\utils\\catchAsync.js:4:18\n    at Layer.handle [as handle_request] (C:\\Users\\hp\\OneDrive\\Desktop\\makaut\\AMS\\server\\node_modules\\express\\lib\\router\\layer.js:95:5)\n    at next (C:\\Users\\hp\\OneDrive\\Desktop\\makaut\\AMS\\server\\node_modules\\express\\lib\\router\\route.js:149:13)\n    at Route.dispatch (C:\\Users\\hp\\OneDrive\\Desktop\\makaut\\AMS\\server\\node_modules\\express\\lib\\router\\route.js:119:3)\n    at Layer.handle [as handle_request] (C:\\Users\\hp\\OneDrive\\Desktop\\makaut\\AMS\\server\\node_modules\\express\\lib\\router\\layer.js:95:5)\n    at C:\\Users\\hp\\OneDrive\\Desktop\\makaut\\AMS\\server\\node_modules\\express\\lib\\router\\index.js:284:15\n    at param (C:\\Users\\hp\\OneDrive\\Desktop\\makaut\\AMS\\server\\node_modules\\express\\lib\\router\\index.js:365:14)\n    at param (C:\\Users\\hp\\OneDrive\\Desktop\\makaut\\AMS\\server\\node_modules\\express\\lib\\router\\index.js:376:14)\n    at Function.process_params (C:\\Users\\hp\\OneDrive\\Desktop\\makaut\\AMS\\server\\node_modules\\express\\lib\\router\\index.js:421:3)","status":"error","statusCode":500,"timestamp":"2025-03-17T03:24:52.677Z"}
+{"level":"info","message":"MongoDB connection established","timestamp":"2025-03-17T03:25:11.338Z"}
