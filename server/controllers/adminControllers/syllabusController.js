@@ -85,34 +85,35 @@ exports.getAllSyllabusBySession = catchAsync(async (req, res, next) => {
     if (!sessionId) {
         return next(new ApiError('Session ID is required', 400));
     }
-    const session =await Session.findById(sessionId).select("syllabusId");
-   
-   if (! session){
-    return next(new ApiError('Session not found', 404));
-   }
+    const session = await Session.findById(sessionId).select("syllabusId");
+    console.log(session);
 
-   const syllabusId=session.syllabusId;
-   
-
-    
-            let subjects = await Subject.find({ syllabusId })
-                .select('-createdAt -updatedAt -__v')
-                .populate({ path: 'categoryId', select: 'name' });
-subjects=subjects.map((subject)=>{
-    return {
-        _id: subject._id,
-        name: subject.name,
-        category:subject.categoryId.name,
-        code:subject.code
+    if (!session) {
+        return next(new ApiError('Session not found', 404));
     }
-})
-                
+
+    const syllabusId = session.syllabusId;
+
+
+
+    let subjects = await Subject.find({ syllabusId })
+        .select('-createdAt -updatedAt -__v')
+        .populate({ path: 'categoryId', select: 'name' });
+    subjects = subjects.map((subject) => {
+        return {
+            _id: subject._id,
+            name: subject.name,
+            category: subject.categoryId.name,
+            code: subject.code
+        }
+    })
+
 
     res.status(200).json({
         status: 'success',
         results: subjects.length,
         data: subjects,
-        
+
     });
 }
 
