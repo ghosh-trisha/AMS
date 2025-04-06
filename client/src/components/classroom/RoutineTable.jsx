@@ -45,9 +45,9 @@ const [isDeleting, setIsDeleting] = useState(false);
     return {
       minHour: min,
       maxHour: max,
-      pxPerHour: timelineWidth / (max - min || 1),
+      pxPerHour: timelineWidth / (max - min),
     };
-  }, [routineData]);
+  }, [routineData,isDeleting]);
 
   const confirmDelete = (scheduleId) => {
     setSelectedScheduleId(scheduleId);
@@ -89,7 +89,7 @@ const [isDeleting, setIsDeleting] = useState(false);
       :
       <div>
       <div className="flex ml-[120px] border-b border-gray-400 relative" style={{ width: timelineWidth }}>
-        {maxHour && [...Array(maxHour - minHour + 1)].map((_, i) => {
+        {maxHour && [...Array(maxHour - minHour )].map((_, i) => {
           const hour = minHour + i;
           return (
             <div
@@ -107,7 +107,7 @@ const [isDeleting, setIsDeleting] = useState(false);
       {weekdays.map(day => {
         const schedules = routineData.find(d => d._id === day)?.schedules || [];
         return (
-          <div key={day} className="flex items-center h-[100px]">
+          <div key={day} className="flex items-center h-[70px]">
             <div className="w-[120px] pr-2 text-right font-semibold">{day}</div>
             <div className="relative bg-gray-50 border border-gray-200 rounded-md w-full h-full" style={{ width: timelineWidth }}>
               {schedules.map((sch, idx) => {
