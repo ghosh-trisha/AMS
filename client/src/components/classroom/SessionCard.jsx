@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+import RoutineTable from "./RoutineTable"
 
 const SessionCard = ({ semesterId, setCurrSessionId }) => {
   const [showRoutine, setShowRoutine] = useState(false);
@@ -57,9 +58,10 @@ const SessionCard = ({ semesterId, setCurrSessionId }) => {
           {/* Current Session */}
           <div
             className="p-4 bg-gray-100 rounded-lg"
-            onClick={() => setShowCurrSession(!showCurrSession)}
+            
           >
-            <h3 className="text-xl font-semibold flex items-center justify-between">
+            <h3 className={`text-xl font-semibold flex items-center justify-between ${showCurrSession?'bg-white p-2 rounded-lg ':''}`}
+            onClick={() => setShowCurrSession(!showCurrSession)}>
               Current Session
               <span className={`transform transition-transform ${showCurrSession ? 'rotate-180' : ''}`}>
                 ▼
@@ -95,76 +97,7 @@ const SessionCard = ({ semesterId, setCurrSessionId }) => {
                 </div>
 
                 {/* Class Routine Section (static demo data) */}
-                <div>
-                  <h4 className="text-lg font-semibold mb-4">Class Routine</h4>
-                  <div className="overflow-x-auto">
-                    <table className="w-full bg-white rounded-lg shadow-sm">
-                      <thead>
-                        <tr className="bg-gray-50">
-                          <th className="p-3 text-left text-sm font-medium text-gray-600">Time/Day</th>
-                          <th className="p-3 text-left text-sm font-medium text-gray-600">Monday</th>
-                          <th className="p-3 text-left text-sm font-medium text-gray-600">Tuesday</th>
-                          <th className="p-3 text-left text-sm font-medium text-gray-600">Wednesday</th>
-                          <th className="p-3 text-left text-sm font-medium text-gray-600">Thursday</th>
-                          <th className="p-3 text-left text-sm font-medium text-gray-600">Friday</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        <tr className="border-b border-gray-100">
-                          <td className="p-3 text-sm text-gray-600">9:00 AM - 10:00 AM</td>
-                          <td className="p-3">
-                            <div className="text-sm text-gray-800">Data Structures (CS201)</div>
-                            <div className="text-xs text-gray-500">Prof. John Doe</div>
-                          </td>
-                          <td className="p-3">
-                            <div className="text-sm text-gray-800">Algorithms (CS202)</div>
-                            <div className="text-xs text-gray-500">Prof. Jane Smith</div>
-                          </td>
-                          <td className="p-3 bg-gray-50"></td>
-                          <td className="p-3">
-                            <div className="text-sm text-gray-800">Database Systems (CS203)</div>
-                            <div className="text-xs text-gray-500">Prof. Alan Turing</div>
-                          </td>
-                          <td className="p-3 bg-gray-50"></td>
-                        </tr>
-                        <tr className="border-b border-gray-100">
-                          <td className="p-3 text-sm text-gray-600">10:00 AM - 11:00 AM</td>
-                          <td className="p-3 bg-gray-50"></td>
-                          <td className="p-3">
-                            <div className="text-sm text-gray-800">Data Structures (CS201)</div>
-                            <div className="text-xs text-gray-500">Prof. John Doe</div>
-                          </td>
-                          <td className="p-3">
-                            <div className="text-sm text-gray-800">Algorithms (CS202)</div>
-                            <div className="text-xs text-gray-500">Prof. Jane Smith</div>
-                          </td>
-                          <td className="p-3 bg-gray-50"></td>
-                          <td className="p-3">
-                            <div className="text-sm text-gray-800">Database Systems (CS203)</div>
-                            <div className="text-xs text-gray-500">Prof. Alan Turing</div>
-                          </td>
-                        </tr>
-                        <tr className="border-b border-gray-100">
-                          <td className="p-3 text-sm text-gray-600">11:00 AM - 12:00 PM</td>
-                          <td className="p-3">
-                            <div className="text-sm text-gray-800">Algorithms (CS202)</div>
-                            <div className="text-xs text-gray-500">Prof. Jane Smith</div>
-                          </td>
-                          <td className="p-3 bg-gray-50"></td>
-                          <td className="p-3">
-                            <div className="text-sm text-gray-800">Database Systems (CS203)</div>
-                            <div className="text-xs text-gray-500">Prof. Alan Turing</div>
-                          </td>
-                          <td className="p-3">
-                            <div className="text-sm text-gray-800">Data Structures (CS201)</div>
-                            <div className="text-xs text-gray-500">Prof. John Doe</div>
-                          </td>
-                          <td className="p-3 bg-gray-50"></td>
-                        </tr>
-                      </tbody>
-                    </table>
-                  </div>
-                </div>
+                <RoutineTable sessionId={sessionData.currentSession._id}/>
               </div>
             )}
           </div>

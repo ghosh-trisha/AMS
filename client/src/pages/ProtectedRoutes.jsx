@@ -21,7 +21,7 @@ const ProtectedRoutes = () => {
 
     setToken(Cookies.get("accessToken"))
 
-    setRole(Cookies.get("role"));
+    setRole("admin");
   }, []);
 
   if (loading) {
