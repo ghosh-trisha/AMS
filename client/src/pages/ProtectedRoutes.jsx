@@ -21,7 +21,7 @@ const ProtectedRoutes = () => {
 
     setToken(Cookies.get("accessToken"))
 
-    setRole(Cookies.get("role"));
+    setRole(Cookies.get("role"))
   }, []);
 
   if (loading) {
@@ -68,10 +68,9 @@ const ProtectedRoutes = () => {
               <div className="flex flex-1 overflow-hidden">
                 <Sidebar />
                 <main className="flex-1 overflow-auto bg-gray-100">
-                <TeacherRoutes />
+                <StudentRoutes />
                 </main>
               </div>
-                <StudentRoutes />
               </div>
             )
           }

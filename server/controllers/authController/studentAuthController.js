@@ -26,7 +26,7 @@ const generateAccessToken = (student) => {
     role: "student"
   };
 
-  return jwt.sign(payload, accessTokenSecret, { expiresIn: '15m' });
+  return jwt.sign(payload, accessTokenSecret, { expiresIn: '300m' });
 };
 
 // generate refresh token

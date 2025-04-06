@@ -19,7 +19,7 @@ const StudentClassesPage = () => {
       setClasses(res.data.data);
       console.log(res.data.data);
     } catch (error) {
-      toast.error('Failed to fetch classes');
+      toast.error(error.message);
     } finally {
       setLoading(false);
     }
@@ -104,7 +104,7 @@ const StudentClassesPage = () => {
                   <div className="flex justify-center items-center gap-4">
                     {cls.teachers.map((teacher, idx) => (
                       <p key={idx} className="text-sm text-gray-600">
-                        {teacher}
+                        {teacher.name}
                       </p>
                     ))}
                   </div>
