@@ -21,19 +21,14 @@ const attendanceSchema = new mongoose.Schema({
     ref: 'Session', 
     required: true 
   },
-  semesterId: { 
-    type: mongoose.Schema.Types.ObjectId, 
-    ref: 'Semester', 
-    required: true 
-  },
-  subjectId: { 
-    type: mongoose.Schema.Types.ObjectId, 
-    ref: 'Subject', 
-    required: true 
-  },
   scheduleId: { 
     type: mongoose.Schema.Types.ObjectId, 
     ref: 'Schedule', 
+    required: true 
+  },  
+  subjectId: { 
+    type: mongoose.Schema.Types.ObjectId, 
+    ref: 'Subject', 
     required: true 
   },
   classDate: { 

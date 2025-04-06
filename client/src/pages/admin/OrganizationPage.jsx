@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import CreateCourseModal from '../components/CreateCourseModal';
-import ViewClassroomModal from '../components/ViewClassroomModal';
+import CreateCourseModal from '../../components/CreateCourseModal';
+import ViewClassroomModal from '../../components/ViewClassroomModal';
 
 const OrganizationPage = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);

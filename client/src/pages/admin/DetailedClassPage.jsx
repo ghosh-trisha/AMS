@@ -1,10 +1,10 @@
 import React, { useEffect, useState, useRef } from "react";
 import { useParams } from "react-router-dom";
-import Loader from "../components/basic/Loader";
+import Loader from "../../components/basic/Loader";
 import axios from "axios";
-import ClassroomInfo from "../components/classroom/ClassroomInfoCard";
-import SyllabusesCard from "../components/classroom/SyllabusesCard";
-import SessionCard from "../components/classroom/SessionCard";
+import ClassroomInfo from "../../components/classroom/ClassroomInfoCard";
+import SyllabusesCard from "../../components/classroom/SyllabusesCard";
+import SessionCard from "../../components/classroom/SessionCard";
 
 const DetailedDemoClassroom = () => {
   const { semesterId } = useParams();

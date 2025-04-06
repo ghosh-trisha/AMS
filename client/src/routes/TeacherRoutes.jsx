@@ -1,12 +1,12 @@
 import { Routes, Route } from 'react-router-dom';
-import AllClassesAsTeacher from '../pages/teacher/AllClassesAsTeacher';
-import AttendanceRequests from '../pages/teacher/AttendanceRequest';
+import TeacherDashboardPage from '../pages/teacher/TeacherDashboardPage';
 
 const TeacherRoutes = () => (
     <Routes>
        
-        <Route path="/teacher/classes/:teacherId" element={<AllClassesAsTeacher />} />
-        <Route path="/teacher/requests" element={<AttendanceRequests />} />
+        <Route path="/teacher/dashboard" element={<TeacherDashboardPage />} />
+        {/* <Route path="/teacher/classes/:teacherId" element={<TeacherTodaysClasses />} /> */}
+        {/* <Route path="/teacher/requests" element={<TeacherAttendanceRequest />} /> */}
 
 
     </Routes>

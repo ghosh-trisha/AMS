@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 
-const SessionCard = ({ semesterId ,setCurrSessionId}) => {
+const SessionCard = ({ semesterId, setCurrSessionId }) => {
   const [showRoutine, setShowRoutine] = useState(false);
   const [showCurrSession, setShowCurrSession] = useState(false);
   const [showPrevSession, setShowPrevSession] = useState(false);
@@ -46,9 +46,6 @@ const SessionCard = ({ semesterId ,setCurrSessionId}) => {
       >
         <h2 className="text-xl font-semibold flex items-center justify-between">
           Sessions
-          <button className="px-3 py-1 text-sm font-medium text-white bg-blue-500 rounded hover:bg-blue-600">
-            Create Session
-          </button>
           <span className={`transform transition-transform ${showRoutine ? 'rotate-180' : ''}`}>
             ▼
           </span>
@@ -71,16 +68,29 @@ const SessionCard = ({ semesterId ,setCurrSessionId}) => {
 
             {showCurrSession && currentSession && (
               <div className="mt-4 space-y-6">
-                {/* Session Details */}
+                {/* Academic Year */}
+                <h4 className="text-lg font-semibold mb-4">Academic Year: {currentSession.academicYear}</h4>
+
+                {/* Subjects Display */}
                 <div>
-                  <h4 className="text-lg font-semibold mb-4">Session Details</h4>
-                  <div className="p-4 bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow">
-                    <p className="text-sm text-gray-800">
-                      <strong>Academic Year:</strong> {currentSession.academicYear}
-                    </p>
-                    <p className="text-sm text-gray-800">
-                      <strong>Syllabus:</strong> {currentSession.syllabusId?.name}
-                    </p>
+                  <h4 className="text-lg font-semibold mb-4">Subjects</h4>
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {currentSession?.subjects?.length > 0 ? (
+                      currentSession.subjects.map((subject) => (
+                        <div
+                          key={subject._id}
+                          className="group flex items-center justify-between p-4 bg-white rounded-lg hover:bg-gray-200 transition-colors"
+                        >
+                          <div>
+                            <h3 className="font-medium">{subject.name}</h3>
+                            <p className="text-xs text-gray-500">{subject?.categoryId?.name || "No Category"}</p>
+                          </div>
+                          <p className="text-md text-gray-600 font-bold">{subject.code.toUpperCase()}</p>
+                        </div>
+                      ))
+                    ) : (
+                      <div className="text-center py-6 text-gray-500 col-span-full">No subjects available</div>
+                    )}
                   </div>
                 </div>
 
@@ -182,6 +192,7 @@ const SessionCard = ({ semesterId ,setCurrSessionId}) => {
           </div>
         </div>
       )}
+
     </div>
   );
 };

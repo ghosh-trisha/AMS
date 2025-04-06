@@ -3,6 +3,7 @@ const ApiError = require('../../utils/ApiError');
 const Session = require('../../models/Session');
 const Syllabus = require('../../models/Syllabus');
 const Semester = require('../../models/Semester');
+const Subject = require('../../models/Subject');
 
 // Create a new session
 exports.createSession = catchAsync(async (req, res, next) => {
@@ -43,44 +44,48 @@ exports.createSession = catchAsync(async (req, res, next) => {
 // Get all sessions by semester
 exports.getAllSessionsBySemester = catchAsync(async (req, res, next) => {
     const { semesterId } = req.params;
-
+  
     if (!semesterId) {
-        return next(new ApiError('Semester ID is required', 400));
+      return next(new ApiError('Semester ID is required', 400));
     }
-
+  
     // Check if the semester exists
     const semester = await Semester.findById(semesterId);
     if (!semester) {
-        return next(new ApiError('Semester not found', 404));
+      return next(new ApiError('Semester not found', 404));
     }
-
-    // Get all sessions for the semester sorted by createdAt descending.
-    // Note: We are sorting by createdAt even if we later deselect it.
+  
+    // Get all sessions for the semester
     const sessions = await Session.find({ semesterId })
-        .sort({ createdAt: 1 })
-        .populate({
-            path: 'syllabusId',
-            select: 'name'
-        })
-        .select('-createdAt -updatedAt -__v');
-
-    let currentSession = null;
-    let previousSessions = [];
-
-    if (sessions.length > 0) {
-        // The first session is the most recently created one.
-        currentSession = sessions[0];
-        // Map the remaining sessions to an array of names (or any other property you need).
-        previousSessions = sessions.slice(1).map(session => session.academicYear);
+      .sort({ createdAt: -1 })
+      .populate({
+        path: 'syllabusId',
+        select: 'name'
+      })
+      .select('-createdAt -updatedAt -__v');
+  
+    if (sessions.length === 0) {
+      return res.status(404).json({ message: 'No sessions found for this semester' });
     }
-
+  
+    // Extract current session and previous sessions
+    const currentSession = sessions[0];
+    const previousSessions = sessions.slice(1).map(session => session.academicYear);
+  
+    // Fetch subjects for the current session using syllabusId
+    const subjects = await Subject.find({ syllabusId: currentSession.syllabusId._id })
+      .populate('categoryId', 'name') // Populate category name
+      .select('name code categoryId');
+  
+    // Attach subjects to the current session
+    currentSession._doc.subjects = subjects;
+  
     res.status(200).json({
-        status: 'success',
-        data: {
-            currentSession,
-            previousSessions
-        },
-        results: sessions.length
+      status: 'success',
+      data: {
+        currentSession,
+        previousSessions
+      },
+      results: sessions.length
     });
 });
-

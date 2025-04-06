@@ -77,6 +77,7 @@ const CreateCourseModal = ({ isOpen, onClose }) => {
                   setProgramId(null);
                 }}
                 apiUrl={`${baseURL}/departments`} 
+                createApiUrl={`${baseURL}/departments`}
               />
             </div>
 
@@ -94,6 +95,9 @@ const CreateCourseModal = ({ isOpen, onClose }) => {
                   setProgramId(null);
                 }}
                 apiUrl={departmentId ? `${baseURL}/levels/${departmentId}` : null}
+                createApiUrl={`${baseURL}/levels`}
+                parentId={departmentId}
+                parentField="departmentId"
               />
             </div>
 
@@ -108,6 +112,9 @@ const CreateCourseModal = ({ isOpen, onClose }) => {
                   setProgramId(val);
                 }}
                 apiUrl={levelId ? `${baseURL}/programs/${levelId}` : null}
+                createApiUrl={`${baseURL}/programs`}
+                parentId={levelId}
+                parentField="levelId"
               />
             </div>
 

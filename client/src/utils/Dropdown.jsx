@@ -1,31 +1,38 @@
+
 import React, { useEffect, useState } from 'react';
 import Select from 'react-select';
 import axios from 'axios';
-
 
 const DropdownComponent = ({
   onOffState,
   setOn,
   getOnChangeValue,
-  apiUrl
+  apiUrl,
+  createApiUrl, // new prop for creating a new option
+  parentId,     // id of the parent item (if applicable)
+  parentField,   // the key name for the parent id in the payload (if applicable, e.g. 'department' or 'level')
+  isAddOther = true 
 }) => {
   const [options, setOptions] = useState([]);
   const [selectedOption, setSelectedOption] = useState(null);
+  const [showPopup, setShowPopup] = useState(false);
+  const [newName, setNewName] = useState('');
+  const [isCreating, setIsCreating] = useState(false);
 
-  // Fetch dropdown options from API
+  // Fetch dropdown options from API and append "Add Others" option
   useEffect(() => {
-
-console.log("apiUrl",apiUrl);
     if (apiUrl) {
       axios
         .get(apiUrl)
         .then((res) => {
-
           const formatted = res.data?.data?.map((item) => ({
             value: item._id,
             label: item.name
           }));
-          setOptions(formatted || []);
+          // Append the default "Add Others" option
+          const addOthers = isAddOther ? [...formatted, { value: 'add-others', label: 'add others +' }] : formatted;
+          
+          setOptions(addOthers);
         })
         .catch((err) => {
           console.error('Dropdown fetch error:', err);
@@ -34,14 +41,61 @@ console.log("apiUrl",apiUrl);
   }, [apiUrl]);
 
   const handleChange = (option) => {
-    setSelectedOption(option);
-    // Pass the selected value to parent
-    getOnChangeValue(option.value);
-    // console.log("test-----",option.value);
-    // Enable the next dropdown in parent
-    if(setOn){
-        setOn(true);
+    // If the user selects "Add Others", show the popup
+    if (option.value === 'add-others') {
+      setShowPopup(true);
+      return;
     }
+    setSelectedOption(option);
+    getOnChangeValue(option.value);
+    if (setOn) {
+      setOn(true);
+    }
+  };
+
+  const handleAddNew = () => {
+    if (!newName.trim()) return;
+    setIsCreating(true);
+
+    // Build the payload. It always has the new name.
+    let payload = { name: newName };
+    // Conditionally add the parent id if provided.
+    if (parentId && parentField) {
+      payload[parentField] = parentId;
+    }
+
+    axios
+      .post(createApiUrl, payload)
+      .then((res) => {
+        // Assume the response returns the newly created item
+        const newItem = {
+          value: res.data.data._id,
+          label: res.data.data.name
+        };
+        // Add the new item to the options list (before the "Add Others" option)
+        const updatedOptions = options.filter(opt => opt.value !== 'add-others');
+        setOptions([...updatedOptions, newItem, { value: 'add-others', label: 'Add Others' }]);
+        // Set the new item as the selected option
+        setSelectedOption(newItem);
+        getOnChangeValue(newItem.value);
+        if (setOn) {
+          setOn(true);
+        }
+        // Reset the popup states
+        setNewName('');
+        setShowPopup(false);
+      })
+      .catch((err) => {
+        console.error('Error creating new option:', err);
+      })
+      .finally(() => {
+        setIsCreating(false);
+      });
+  };
+
+  const handleCancel = () => {
+    setNewName('');
+    setShowPopup(false);
   };
 
   // Custom styles for react-select
@@ -81,16 +135,89 @@ console.log("apiUrl",apiUrl);
   };
 
   return (
-    <Select
-      styles={customSelectStyles}
-      value={selectedOption}
-      onChange={handleChange}
-      
-      options={options}
-      isDisabled={!onOffState} // if false => disabled
-      placeholder={onOffState ? 'Select an option' : 'Select an option'}
-      isSearchable={true}
-    />
+    <div style={{ position: 'relative' }}>
+      <Select
+        styles={customSelectStyles}
+        value={selectedOption}
+        onChange={handleChange}
+        options={options}
+        isDisabled={!onOffState} // if false => disabled
+        placeholder='Select an option'
+        isSearchable={true}
+      />
+
+      {showPopup && (
+        // Overlay container with backdrop blur and centered popup
+        <div style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          width: '100vw',
+          height: '100vh',
+          backgroundColor: 'rgba(0, 0, 0, 0.3)',
+          backdropFilter: 'blur(1px)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          zIndex: 1000
+        }}>
+          <div style={{
+            background: '#fff',
+            border: '1px solid #e2e8f0',
+            borderRadius: '0.375rem',
+            padding: '1rem',
+            width: '300px',
+            boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
+          }}>
+            <div style={{ marginBottom: '0.5rem' }}>Enter new name:</div>
+            <input
+              type="text"
+              value={newName}
+              onChange={(e) => setNewName(e.target.value)}
+              style={{
+                width: '100%',
+                padding: '0.5rem',
+                marginBottom: '0.5rem',
+                border: '1px solid #cbd5e1',
+                borderRadius: '0.375rem'
+              }}
+              placeholder="New name"
+            />
+            <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+              <button
+                onClick={handleCancel}
+                style={{
+                  marginRight: '0.5rem',
+                  padding: '0.5rem 1rem',
+                  border: 'none',
+                  background: '#e2e8f0',
+                  borderRadius: '0.375rem',
+                  cursor: 'pointer'
+                }}
+                disabled={isCreating}
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleAddNew}
+                style={{
+                  padding: '0.5rem 1rem',
+                  border: 'none',
+                  background: '#3b82f6',
+                  color: '#fff',
+                  borderRadius: '0.375rem',
+                  cursor: 'pointer'
+                }}
+                disabled={isCreating}
+              >
+                {isCreating ? 'Adding...' : 'Add'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+    </div>
   );
 };
 

@@ -1,6 +1,6 @@
 import { Routes, Route } from 'react-router-dom';
-import OrganizationPage from '../pages/OrganizationPage';
-import DetailedClassPage from '../pages/DetailedClassPage';
+import OrganizationPage from '../pages/admin/OrganizationPage';
+import DetailedClassPage from '../pages/admin/DetailedClassPage';
 
 const AdminRoutes = () => (
     <Routes>
