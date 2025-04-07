@@ -80,53 +80,110 @@ exports.getAllSchedulesBySession = catchAsync(async (req, res, next) => {
   if (!sessionExists) {
     return next(new ApiError('Session not found', 404));
   }
-
-  const schedules = await Schedule.find({ sessionId })
-    .populate({
-      path: 'subjectId',
-      select: 'name code categoryId',
-      populate: {
-        path: 'categoryId',
-        select: 'name'
-      }
-    })
-    .select('-createdAt -updatedAt -__v');
-
-  if (!schedules.length) {
-    return next(new ApiError('No schedules found for the given Session ID', 404));
-  }
-
-  const scheduleIds = schedules.map(schedule => schedule._id);
-  const teacherMappings = await ScheduleTeacherMapper.find({ scheduleId: { $in: scheduleIds } })
-    .populate('teacherId', 'name email phone');
-
-  // Combine data
-  const scheduleWithTeachers = schedules.map(schedule => {
-    const assignedTeachers = teacherMappings
-      .filter(mapping => String(mapping.scheduleId) === String(schedule._id))
-      .map(mapping => ({
-        name: mapping.teacherId.name,
-        email: mapping.teacherId.email,
-        phone: mapping.teacherId.phone
-      }));
-
-    return {
-      scheduleId: schedule._id,
-      day: schedule.day,
-      start_time: schedule.start_time,
-      end_time: schedule.end_time,
-      subject: {
-        name: schedule.subjectId?.name,
-        code: schedule.subjectId?.code,
-        category: schedule.subjectId?.categoryId?.name || 'Unknown',
+const schedules = await ScheduleTeacherMapper.aggregate([
+        {
+            $lookup: {
+                from: 'schedules',
+                localField: 'scheduleId',
+                foreignField: '_id',
+                as: 'scheduleDetails'
+            }
+        },
+        { $unwind: '$scheduleDetails' },
+        {
+            $match: {
+                'scheduleDetails.sessionId': new mongoose.Types.ObjectId(sessionId) ,
+                
+            }
+        },
+        {
+            $lookup: {
+                from: 'teachers',
+                localField: 'teacherId',
+                foreignField: '_id',
+                as: 'teacherDetails'
+            }
+        },
+        { $unwind: '$teacherDetails' },
+        {
+            $lookup: {
+                from: 'subjects',
+                localField: 'scheduleDetails.subjectId',
+                foreignField: '_id',
+                as: 'subject'
+            }
+        },
+        { $unwind: '$subject' },
+        {
+            $lookup: {
+                from: 'categories',
+                localField: 'subject.categoryId',
+                foreignField: '_id',
+                as: 'subjectCategory'
+            }
+        },
+        { $unwind: '$subjectCategory' },
+        {
+          $group: {
+              _id: '$scheduleId',
+              id: { $first:'$scheduleId'},
+              day: { $first: '$scheduleDetails.day' },
+              start_time: { $first: '$scheduleDetails.start_time' },
+              end_time: { $first: '$scheduleDetails.end_time' },
+              subjectName: { $first: '$subject.name' },
+              subjectCode: { $first: '$subject.code' },
+              subjectCategory: { $first: '$subjectCategory.name' },
+              teachers: {
+                  $push: {
+                      name: '$teacherDetails.name',
+                      email: '$teacherDetails.email',
+                      phone: '$teacherDetails.phone'
+                  }
+              }
+          }
       },
-      teachers: assignedTeachers.length > 0 ? assignedTeachers : ['No teacher assigned'],
-    };
-  });
+      {
+        $sort: {
+          'day': 1,
+          'start_time': 1
+        }
+      },
+        {
+            $group: {
+                _id: '$day',
+                schedules: { $push: {
+                  id: '$id',
+                  day: '$day' ,
+                start_time: '$start_time',
+                end_time: '$end_time' ,
+                subjectName: '$subjectName' ,
+                subjectCode:  '$subjectCode' ,
+                subjectCategory: '$subjectCategory' ,
+                teachers: '$teachers'
+              
+              } },
+               
+            }
+        },
+       
+        
+    ]);
 
   res.status(200).json({
     status: 'success',
-    results: scheduleWithTeachers.length,
-    data: scheduleWithTeachers,
+    results: schedules.length,
+    data: schedules,
   });
 });
+
+
+
+exports.deleteSchedule = catchAsync(async (req, res, next) => {
+  const { scheduleId } = req.params;
+
+   await Schedule.findByIdAndDelete(scheduleId)
+   res.status(200).json({
+    status: 'success',
+   message : 'schedule deleted successfuly'
+  });
+})

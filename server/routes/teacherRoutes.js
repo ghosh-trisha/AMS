@@ -9,7 +9,7 @@ router.get('/classes/:teacherId', teacherController.getTodaysClassesAsTeacher);
 
 
 // get attendance request as a teacher
-router.get('/attendance/:sessionId/:scheduleId/:subjectId', attendanceController.getAttendanceRequestsAsTeacher);
+router.get('/attendance/:scheduleId', attendanceController.getAttendanceRequestsAsTeacher);
 
 
 // give attendance accepted or rejected status as a teacher

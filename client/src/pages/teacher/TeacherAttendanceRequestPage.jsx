@@ -1,48 +1,76 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
+import axios from 'axios';
+import Cookies from 'js-cookie';
+
+const decodeToken = (token) => {
+  try {
+    const payload = JSON.parse(atob(token.split('.')[1]));
+    return {
+      teacherId: payload.id ? payload.id : null,
+    };
+  } catch (error) {
+    console.error("Error decoding token:", error);
+    return null;
+  }
+};
 
 const AttendanceRequests = () => {
-  const { classId } = useParams(); // schedule _id (demo only)
+  const { classId } = useParams(); // scheduleId
   const [requests, setRequests] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  // Demo data for attendance requests with status field
-  const demoRequests = [
-    { _id: "1", studentName: "Alice Johnson", rollNumber: "101", status: "pending" },
-    { _id: "2", studentName: "Bob Smith", rollNumber: "102", status: "pending" },
-    { _id: "3", studentName: "Charlie Brown", rollNumber: "103", status: "rejected" },
-    { _id: "4", studentName: "David Lee", rollNumber: "104", status: "pending" },
-    { _id: "5", studentName: "Eva Adams", rollNumber: "105", status: "accepted" },
-    { _id: "6", studentName: "Alice Johnson", rollNumber: "101", status: "pending" },
-    { _id: "7", studentName: "Bob Smith", rollNumber: "102", status: "pending" },
-    { _id: "8", studentName: "Charlie Brown", rollNumber: "103", status: "rejected" },
-    { _id: "9", studentName: "David Lee", rollNumber: "104", status: "pending" },
-    { _id: "10", studentName: "Eva Adams", rollNumber: "105", status: "accepted" }
-  ];
-
-  // Define the order for statuses
-  const statusOrder = { pending: 1, accepted: 2, rejected: 3 };
+  
+  const accessToken = Cookies.get('accessToken');
+  const decodedAccess = decodeToken(accessToken);
+  const teacherId = decodedAccess?.teacherId || "teacherId";
 
   useEffect(() => {
-    // Simulate fetching data with a delay
-    const timer = setTimeout(() => {
-      // Sort demo data based on status order: pending, accepted, rejected
-      const sortedRequests = demoRequests.sort((a, b) => statusOrder[a.status] - statusOrder[b.status]);
-      setRequests(sortedRequests);
-      setLoading(false);
-    }, 500);
+    const fetchRequests = async () => {
+      try {
+        const res = await axios.get(`http://localhost:8080/api/teacher/attendance/${classId}`);
+        const rawData = res.data.data || [];
 
-    return () => clearTimeout(timer);
+        const formattedData = rawData.map((item) => ({
+          _id: item._id,
+          studentName: item.studentId.name,
+          rollNumber: item.studentId.rollNumber,
+          status: item.status,
+        }));
+
+        setRequests(formattedData);
+      } catch (error) {
+        console.error('Failed to fetch attendance requests:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchRequests();
   }, [classId]);
 
+  const handleStatusChange = async (requestId, newStatus) => {
+    try {
+      await axios.post('http://localhost:8080/api/teacher/attendance/update', {
+        attendanceId: requestId,
+        status: newStatus,
+        teacherId: teacherId,
+      });
+
+      setRequests((prev) =>
+        prev.map((req) => (req._id === requestId ? { ...req, status: newStatus } : req))
+      );
+    } catch (error) {
+      console.error(`Failed to update status to ${newStatus}:`, error);
+    }
+  };
+
   const handleAccept = (requestId) => {
-    // Simulate accepting the request by updating its status
-    setRequests(requests.map(req => req._id === requestId ? { ...req, status: 'accepted' } : req));
+    handleStatusChange(requestId, 'accepted');
   };
 
   const handleReject = (requestId) => {
-    // Simulate rejecting the request by updating its status
-    setRequests(requests.map(req => req._id === requestId ? { ...req, status: 'rejected' } : req));
+    handleStatusChange(requestId, 'rejected');
   };
 
   if (loading) return <div className="text-center py-6">Loading requests...</div>;
@@ -73,13 +101,13 @@ const AttendanceRequests = () => {
                     <>
                       <button
                         onClick={() => handleAccept(req._id)}
-                        className="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded mr-2"
+                        className="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded mr-2 cursor-pointer"
                       >
                         Accept
                       </button>
                       <button
                         onClick={() => handleReject(req._id)}
-                        className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded"
+                        className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded cursor-pointer"
                       >
                         Reject
                       </button>

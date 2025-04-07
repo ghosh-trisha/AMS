@@ -65,6 +65,7 @@ router.get('/sessions/:semesterId', sessionController.getAllSessionsBySemester);
 // schedule routes
 router.post('/schedule', scheduleController.createSchedule);
 router.get('/schedule/:sessionId', scheduleController.getAllSchedulesBySession);
+router.delete('/schedule/:scheduleId', scheduleController.deleteSchedule);
 
 
 //teacher routes

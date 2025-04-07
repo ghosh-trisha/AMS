@@ -61,27 +61,23 @@ exports.createAttendanceRequestAsStudent = catchAsync(async (req, res, next) => 
 
 // get attendance requests as a teacher
 exports.getAttendanceRequestsAsTeacher = catchAsync(async (req, res, next) => {
-    const { sessionId, scheduleId, subjectId } = req.params;
+    const { scheduleId } = req.params;
 
     // Validate the input fields
-    if (!sessionId || !scheduleId || !subjectId) {
-        return next(new ApiError('sessionId, scheduleId, and subjectId are required', 400));
+    if (!scheduleId) {
+        return next(new ApiError('scheduleId is required', 400));
     }
 
     // Validate if ObjectIds are correct
-    if (!mongoose.Types.ObjectId.isValid(sessionId) ||
-        !mongoose.Types.ObjectId.isValid(scheduleId) ||
-        !mongoose.Types.ObjectId.isValid(subjectId)) {
+    if (!mongoose.Types.ObjectId.isValid(scheduleId)) {
         return next(new ApiError('Invalid IDs provided', 400));
     }
 
     // Check if session, schedule, and subject exist
-    const sessionExists = await Session.findById(sessionId);
     const scheduleExists = await Schedule.findById(scheduleId);
-    const subjectExists = await Subject.findById(subjectId);
 
-    if (!sessionExists || !scheduleExists || !subjectExists) {
-        return next(new ApiError('Session, Schedule, or Subject not found', 404));
+    if (!scheduleExists) {
+        return next(new ApiError('Schedule not found', 404));
     }
 
     // Get today's date in YYYY-MM-DD format
@@ -91,18 +87,16 @@ exports.getAttendanceRequestsAsTeacher = catchAsync(async (req, res, next) => {
 
     // Find attendance requests
     const attendanceRequests = await Attendance.find({
-        sessionId,
         scheduleId,
-        subjectId,
         classDate: { $gte: startOfDay, $lte: endOfDay },
 
     })
-        .populate('studentId', 'name email phone')
+        .populate('studentId', 'name phone rollNumber')
         .select('-createdAt -updatedAt -__v -sessionId -scheduleId -subjectId -classDate');
 
-    if (attendanceRequests.length === 0) {
-        return next(new ApiError('No attendance requests found for today for this class', 404));
-    }
+    // if (attendanceRequests.length === 0) {
+    //     return next(new ApiError('No attendance requests found for today for this class', 404));
+    // }
 
     res.status(200).json({
         status: 'success',
