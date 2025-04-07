@@ -76,7 +76,7 @@ const Sidebar = () => {
                 </Link>
               </li>
               <li>
-                <Link to="/teacher/todayclasses" className="block p-2 hover:bg-gray-700 rounded">
+                <Link to={`/teacher/todaysclasses/${userId}`} className="block p-2 hover:bg-gray-700 rounded">
                   Today's Classes
                 </Link>
               </li>

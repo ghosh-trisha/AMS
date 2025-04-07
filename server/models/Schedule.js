@@ -10,5 +10,12 @@ const scheduleSchema = new mongoose.Schema({
 }, {
     timestamps: true
 });
+scheduleSchema.pre('findOneAndDelete', async function (next) {
+    const doc = await this.model.findOne(this.getFilter());
+    if (doc) {
+      await ScheduleTeacherMapper.deleteMany({ scheduleId: doc._id });
+    }
+    next();
+  });
 
 module.exports = mongoose.model('Schedule', scheduleSchema);
