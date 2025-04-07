@@ -647,3 +647,6 @@
 {"level":"info","message":"MongoDB connection established","timestamp":"2025-04-07T01:12:17.830Z"}
 {"level":"info","message":"MongoDB connection established","timestamp":"2025-04-07T01:12:25.501Z"}
 {"level":"info","message":"MongoDB connection established","timestamp":"2025-04-07T01:21:48.498Z"}
+{"level":"info","message":"MongoDB connection established","timestamp":"2025-04-07T01:26:16.883Z"}
+{"level":"warn","message":"MongoDB connection disconnected","timestamp":"2025-04-07T01:28:39.365Z"}
+{"level":"info","message":"MongoDB connection established","timestamp":"2025-04-07T01:40:35.228Z"}

@@ -2,6 +2,7 @@ import React from 'react';
 import logo from '../../assets/logo.png';
 import { useRole } from '../contexts/roleContext';
 import Cookies from "js-cookie";
+import {useNavigate} from 'react-router-dom'
 
 
 const decodeToken = (token) => {
@@ -19,8 +20,8 @@ const decodeToken = (token) => {
 
 
 const TopBar = () => {
-  const { role } = useRole();
-
+  const { role, setRole } = useRole();
+const navigate=useNavigate();
   const accessToken = Cookies.get('accessToken');
   console.log("Access Token:", accessToken);
   const decodedAccess = decodeToken(accessToken);
@@ -56,7 +57,15 @@ const TopBar = () => {
           <p className="text-sm capitalize">{userName}</p>
           <p className="text-xs text-gray-400">{userEmail}</p>
         </div>
-        <button className="bg-red-500 hover:bg-red-600 px-4 py-2 rounded">
+        <button className="bg-red-500 hover:bg-red-600 px-4 py-2 rounded" onClick={
+          () => {
+            Object.keys(Cookies.get()).forEach(function(cookieName) {
+              Cookies.remove(cookieName);
+            });
+            setRole(null);
+            navigate("/");
+          }
+        }>
           Logout
         </button>
       </div>
