@@ -645,3 +645,5 @@
 {"level":"info","message":"MongoDB connection established","timestamp":"2025-04-07T01:04:42.957Z"}
 {"isOperational":true,"level":"error","message":"Invalid credentials","stack":"Error: Invalid credentials\n    at C:\\Users\\hp\\OneDrive\\Desktop\\makaut\\AMS\\server\\controllers\\authController\\studentAuthController.js:134:17\n    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)\n    at async C:\\Users\\hp\\OneDrive\\Desktop\\makaut\\AMS\\server\\utils\\catchAsync.js:4:12","status":"error","statusCode":401,"timestamp":"2025-04-07T01:11:24.887Z"}
 {"level":"info","message":"MongoDB connection established","timestamp":"2025-04-07T01:12:17.830Z"}
+{"level":"info","message":"MongoDB connection established","timestamp":"2025-04-07T01:12:25.501Z"}
+{"level":"info","message":"MongoDB connection established","timestamp":"2025-04-07T01:21:48.498Z"}

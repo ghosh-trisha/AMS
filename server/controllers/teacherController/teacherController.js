@@ -163,11 +163,11 @@ exports.getTodaysClassesAsTeacher = catchAsync(async (req, res, next) => {
   const mappedSchedules = await ScheduleTeacherMapper.find({ teacherId })
     .populate('scheduleId');
 
-  if (!mappedSchedules.length) {
-    return next(new ApiError('No classes found for this teacher', 404));
-  }
-
-  const scheduleIds = mappedSchedules.map((map) => map.scheduleId._id);
+  // if (!mappedSchedules.length) {
+  //   return next(new ApiError('No classes found for this teacher', 404));
+  // }
+console.log(mappedSchedules)
+  const scheduleIds = mappedSchedules.map((map) => map?.scheduleId?._id).filter((ele)=>ele!=null);
 
   // Use aggregation pipeline to fetch class details for the schedule IDs
   const classes = await Schedule.aggregate([
@@ -276,9 +276,9 @@ exports.getTodaysClassesAsTeacher = catchAsync(async (req, res, next) => {
     }
   ]);
 
-  if (!classes.length) {
-    return next(new ApiError('No classes found for today', 404));
-  }
+  // if (!classes.length) {
+  //   return next(new ApiError('No classes found for today', 404));
+  // }
 
   res.status(200).json({
     status: 'success',

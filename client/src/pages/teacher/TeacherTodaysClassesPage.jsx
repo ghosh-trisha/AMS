@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useParams, useNavigate } from 'react-router-dom';
+import { CalendarDays, Clock, BookOpen } from 'lucide-react';
 
 const TodaysClassesForTeacher = () => {
   const { teacherId } = useParams();
@@ -9,7 +10,6 @@ const TodaysClassesForTeacher = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // Helper function to convert "HH:mm" to minutes since midnight
   const toMinutes = (timeStr) => {
     const [hours, minutes] = timeStr.split(':').map(Number);
     return hours * 60 + minutes;
@@ -20,7 +20,6 @@ const TodaysClassesForTeacher = () => {
       try {
         const res = await axios.get(`http://localhost:8080/api/teacher/classes/${teacherId}`);
         let classesData = res.data.data || [];
-        // Sort by start_time in increasing order
         classesData.sort((a, b) => toMinutes(a.start_time) - toMinutes(b.start_time));
         setClasses(classesData);
       } catch (err) {
@@ -33,9 +32,7 @@ const TodaysClassesForTeacher = () => {
     fetchClasses();
   }, [teacherId]);
 
-  // When a row is clicked, navigate to the attendance request page
-  const handleRowClick = (cls) => {
-    // We assume each schedule/class document includes an `_id`
+  const handleCardClick = (cls) => {
     navigate(`/teacher/requests`);
   };
 
@@ -44,51 +41,42 @@ const TodaysClassesForTeacher = () => {
 
   return (
     <div className="p-6">
-      <h1 className="text-3xl font-bold mb-6 text-center">Today's Classes</h1>
+      <h1 className="text-3xl font-bold mb-6 text-center text-blue-700">Today's Classes</h1>
       {classes.length === 0 ? (
         <div className="text-center text-gray-600">No classes scheduled for today.</div>
       ) : (
-        <div className="overflow-x-auto">
-          <table className="min-w-full bg-white border rounded-lg shadow-lg">
-            <thead>
-              <tr className="bg-blue-500 text-white">
-                <th className="px-4 py-3">Day</th>
-                <th className="px-4 py-3">Start Time</th>
-                <th className="px-4 py-3">End Time</th>
-                <th className="px-4 py-3">Subject Name</th>
-                <th className="px-4 py-3">Subject Code</th>
-                <th className="px-4 py-3">Category</th>
-                <th className="px-4 py-3">Academic Year</th>
-                <th className="px-4 py-3">Semester</th>
-                <th className="px-4 py-3">Course</th>
-                <th className="px-4 py-3">Program</th>
-                <th className="px-4 py-3">Level</th>
-                <th className="px-4 py-3">Department</th>
-              </tr>
-            </thead>
-            <tbody>
-              {classes.map((cls, index) => (
-                <tr
-                  key={index}
-                  className="border-t cursor-pointer hover:bg-blue-100 transition-colors"
-                  onClick={() => handleRowClick(cls)}
-                >
-                  <td className="px-4 py-2 text-center">{cls.day}</td>
-                  <td className="px-4 py-2 text-center">{cls.start_time}</td>
-                  <td className="px-4 py-2 text-center">{cls.end_time}</td>
-                  <td className="px-4 py-2 text-center">{cls.subjectName}</td>
-                  <td className="px-4 py-2 text-center">{cls.subjectCode}</td>
-                  <td className="px-4 py-2 text-center">{cls.subjectCategory}</td>
-                  <td className="px-4 py-2 text-center">{cls.academicYear}</td>
-                  <td className="px-4 py-2 text-center">{cls.semesterName}</td>
-                  <td className="px-4 py-2 text-center">{cls.courseName}</td>
-                  <td className="px-4 py-2 text-center">{cls.programName}</td>
-                  <td className="px-4 py-2 text-center">{cls.levelName}</td>
-                  <td className="px-4 py-2 text-center">{cls.departmentName}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          {classes.map((cls, index) => (
+            <div
+              key={index}
+              onClick={() => handleCardClick(cls)}
+              className="cursor-pointer bg-white rounded-2xl shadow-lg p-5 transition-transform hover:scale-105 border hover:border-blue-500"
+            >
+              <div className="flex items-center justify-between mb-3">
+                <div className="flex items-center gap-2 text-blue-600 font-semibold">
+                  <CalendarDays className="w-5 h-5" />
+                  <span>{cls.day}</span>
+                </div>
+                <div className="flex items-center gap-2 text-gray-500">
+                  <Clock className="w-5 h-5" />
+                  <span>{cls.start_time} - {cls.end_time}</span>
+                </div>
+              </div>
+              <h2 className="text-xl font-bold text-gray-800 mb-1 flex items-center gap-2">
+                <BookOpen className="w-5 h-5 text-purple-600" />
+                {cls.subjectName} <span className="text-sm text-gray-400">({cls.subjectCode})</span>
+              </h2>
+              <p className="text-sm text-gray-600 mb-2 italic">{cls.subjectCategory}</p>
+              <div className="text-sm text-gray-700 space-y-1">
+                <p><span className="font-medium">Year:</span> {cls.academicYear}</p>
+                <p><span className="font-medium">Semester:</span> {cls.semesterName}</p>
+                <p><span className="font-medium">Course:</span> {cls.courseName}</p>
+                <p><span className="font-medium">Program:</span> {cls.programName}</p>
+                <p><span className="font-medium">Level:</span> {cls.levelName}</p>
+                <p><span className="font-medium">Department:</span> {cls.departmentName}</p>
+              </div>
+            </div>
+          ))}
         </div>
       )}
     </div>
