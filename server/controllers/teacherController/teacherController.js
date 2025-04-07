@@ -271,7 +271,8 @@ console.log(mappedSchedules)
         courseName: '$course.name',
         programName: '$program.name',
         levelName: '$level.name',
-        departmentName: '$department.name'
+        departmentName: '$department.name',
+        classId: '$_id',
       }
     }
   ]);

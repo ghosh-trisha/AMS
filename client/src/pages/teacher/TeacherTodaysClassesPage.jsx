@@ -33,7 +33,8 @@ const TodaysClassesForTeacher = () => {
   }, [teacherId]);
 
   const handleCardClick = (cls) => {
-    navigate(`/teacher/requests`);
+    console.log('Class clicked:', cls.classId);
+    navigate(`/teacher/requests/${cls.classId}`);
   };
 
   if (loading) return <div className="text-center py-6">Loading classes...</div>;
