@@ -17,7 +17,7 @@ const StudentClassesPage = () => {
       setLoading(true);
       const res = await axios.get(`http://localhost:8080/api/student/classes/${id}`);
       setClasses(res.data.data);
-      console.log(res.data.data);
+      // console.log(res.data.data);
     } catch (error) {
       toast.error(error.message);
     } finally {
@@ -28,32 +28,36 @@ const StudentClassesPage = () => {
   // Mark attendance for a specific class
   const handleMarkAttendance = async (index) => {
     try {
-      // Set loading state for this specific class
-      // setAttendanceLoading((prev) => ({ ...prev, [classId]: true }));
+      setAttendanceLoading((prev) => ({ ...prev, [index]: true }));
+      const cls = classes[index];
+      // console.log(cls);
 
-      // Simulate API call to mark attendance
-      // await axios.post(`http://localhost:8080/api/student/attendance`, {
-      //   classId,
-      //   studentId: id,
-      // });
+      // 🆕 Call student/attendance API
+      // console.log("sessionId", cls.sessionId);
+      // console.log("scheduleId", cls.scheduleId);
+      // console.log("subjectId", cls.subjectId);
 
-      // Simulate a delay for demonstration
-      setTimeout(() => {
-        toast.success('Attendance marked successfully!');
-        // Update the class to show "Pending" state
+      const res = await axios.post('http://localhost:8080/api/student/attendance', {
+        studentId: id,
+        sessionId: cls.sessionId,
+        scheduleId: cls.scheduleId,
+        subjectId: cls.subjectId
+      });
+      // console.log(res.data.data);
 
 
-        setClasses((prevClasses) =>
-          prevClasses.map((cls,ind) =>
-            ind === index ? { ...cls, attendanceStatus: 'pending' } : cls
-          )
-        );
-      }, 200); // 2-second delay
+      toast.success('Attendance marked successfully!');
+      const updatedStatus = res.data.data?.status || 'pending';
+
+      setClasses((prevClasses) =>
+        prevClasses.map((item, ind) =>
+          ind === index ? { ...item, attendanceStatus: updatedStatus } : item
+        )
+      );
     } catch (error) {
       toast.error('Failed to mark attendance');
     } finally {
-      // Reset loading state for this specific class
-      // setAttendanceLoading((prev) => ({ ...prev, [classId]: false }));
+      setAttendanceLoading((prev) => ({ ...prev, [index]: false }));
     }
   };
 
@@ -110,15 +114,15 @@ const StudentClassesPage = () => {
                   </div>
                 </div>
 
-                {cls.attendanceStatus === 'pending' ? (
-                  <div className="px-4 py-2 bg-yellow-500 text-white rounded-md">
-                    Pending
+                {cls.attendanceStatus ? (
+                  <div className="px-4 py-2 bg-yellow-500 text-white rounded-md capitalize">
+                    {cls.attendanceStatus}
                   </div>
                 ) : (
                   <button
                     onClick={() => handleMarkAttendance(index)}
                     disabled={attendanceLoading[cls._id]}
-                    className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors flex items-center gap-2"
+                    className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors flex items-center gap-2 cursor-pointer"
                   >
                     {(
                       'Mark Attendance'

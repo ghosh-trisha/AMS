@@ -4,6 +4,7 @@ const ApiError = require('../../utils/ApiError');
 const Student = require('../../models/Student');
 const Schedule = require('../../models/Schedule');
 const ScheduleTeacherMapper = require('../../models/ScheduleTeacherMapper');
+const Attendance = require('../../models/Attendance');
 
 
 // Controller function to get all students
@@ -39,6 +40,9 @@ exports.getTodaysClassesAsStudent = catchAsync(async (req, res, next) => {
     // Determine today's weekday in long format (e.g., "Monday")
     const today = new Date();
     const weekday = today.toLocaleString('en-US', { weekday: 'long' });
+    // const todayDateOnly = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+    const startOfDay = new Date(today.setHours(0, 0, 0, 0));
+    const endOfDay = new Date(today.setHours(23, 59, 59, 999));
 
     const sessionIdToUse = givenSessionId 
         ? new mongoose.Types.ObjectId(givenSessionId) 
@@ -182,7 +186,10 @@ exports.getTodaysClassesAsStudent = catchAsync(async (req, res, next) => {
                         email: '$teacherDetails.email',
                         phone: '$teacherDetails.phone'
                     }
-                }
+                },
+                scheduleId: { $first: '$scheduleDetails._id' },
+                subjectId: { $first: '$subject._id' },
+                sessionId: { $first: '$scheduleDetails.sessionId' },
             }
         },
         {
@@ -194,11 +201,26 @@ exports.getTodaysClassesAsStudent = catchAsync(async (req, res, next) => {
                 subjectName: 1,
                 subjectCode: 1,
                 subjectCategory: 1,
-                teachers: 1
+                teachers: 1,
+                scheduleId: 1,
+                subjectId: 1,
+                sessionId: 1
             }
         }
     ]);
 
+    for (const schedule of schedules) {
+        const attendance = await Attendance.findOne({
+            studentId: studentId,
+            sessionId: sessionIdToUse,
+            scheduleId: schedule.scheduleId,
+            subjectId: schedule.subjectId,
+            classDate: { $gte: startOfDay, $lte: endOfDay }
+        });
+        // console.log(attendance)
+
+        schedule.attendanceStatus = attendance ? attendance.status : null;
+    }
 
     res.status(200).json({
         status: 'success',
