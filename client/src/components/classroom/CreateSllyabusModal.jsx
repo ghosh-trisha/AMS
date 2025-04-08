@@ -93,7 +93,7 @@ const CreateSyllabusModal = ({ isOpen, onClose , semesterId}) => {
           <button
               type="button"
               onClick={handleAddSubject}
-              className="w-full py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors"
+              className="w-full py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors cursor-pointer"
             >
               Add Subject
             </button>
@@ -145,7 +145,7 @@ const CreateSyllabusModal = ({ isOpen, onClose , semesterId}) => {
           <button
             type="button"
             onClick={onClose}
-            className="px-4 py-2 text-gray-600 hover:bg-gray-100 rounded-md transition-colors"
+            className="px-4 py-2 text-gray-600 hover:bg-gray-100 rounded-md transition-colors cursor-pointer"
             disabled={loading}
           >
             Cancel
@@ -153,7 +153,7 @@ const CreateSyllabusModal = ({ isOpen, onClose , semesterId}) => {
           <button
             type="button"
             onClick={handleCreateSyllabus}
-            className="px-4 py-2 bg-green-500 text-white rounded-md hover:bg-green-600 transition-colors flex items-center gap-2"
+            className="px-4 py-2 bg-green-500 text-white rounded-md hover:bg-green-600 transition-colors flex items-center gap-2 cursor-pointer"
             disabled={loading}
           >
             {loading && <Loader loading={true} size={10} />}

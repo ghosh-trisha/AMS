@@ -60,6 +60,8 @@ exports.getAllSemestersByCourse = catchAsync(async (req, res, next) => {
     // Find semesters under this course
     const semesters = await Semester.find({ courseId }).select('_id name');
 
+    semesters.sort((a, b) => Number(a.name) - Number(b.name));
+
     res.status(200).json({
         status: 'success',
         results: semesters.length,

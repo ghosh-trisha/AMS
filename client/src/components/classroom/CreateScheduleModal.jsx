@@ -9,32 +9,13 @@ import formatTime from '../../utils/formatDate';
 const CreateScheduleModal = ({ currSessionId, onClose, onScheduleCreated }) => {
   const [selectedSubject, setSelectedSubject] = useState(null);
   const [loading, setLoading] = useState(false);
-  const  [subjectLoader, setSubjectLoader]=useState(false)
-  const  [teacherLoader, setTeacherLoader]=useState(false)
+  const [subjectLoader, setSubjectLoader] = useState(false)
+  const [teacherLoader, setTeacherLoader] = useState(false)
   const [error, setError] = useState(null);
   const [scheduleEntries, setScheduleEntries] = useState([]);
-  const [subjects , setSubjects]=useState([]);
-  const [teachers , setTeachers]=useState([]);
+  const [subjects, setSubjects] = useState([]);
+  const [teachers, setTeachers] = useState([]);
 
-  // Demo data
-  const demoSubjects = [
-    { _id: '1', name: 'Mathematics', code: 'MATH101' },
-    { _id: '2', name: 'Physics', code: 'PHY102' },
-    { _id: '3', name: 'Chemistry', code: 'CHEM103' }
-  ];
-
-  const demoTeachers = [
-    { _id: '1', first_name: 'John', last_name: 'Doe' },
-    { _id: '2', first_name: 'Jane', last_name: 'Smith' },
-    { _id: '3', first_name: 'Bob', last_name: 'Johnson' }
-  ];
-
-  // const subjects = demoSubjects.map(subject => ({
-  //   value: subject._id,
-  //   label: `${subject.name} (${subject.code})`
-  // }));
-
- 
 
   const weekdays = [
     { value: 'Monday', label: 'Monday' },
@@ -55,96 +36,143 @@ const CreateScheduleModal = ({ currSessionId, onClose, onScheduleCreated }) => {
     }]);
   };
 
-  const updateScheduleEntry = (index, field, value) => {
+  const updateScheduleEntry = async (index, field, value, entry) => {
     const newEntries = [...scheduleEntries];
     newEntries[index][field] = value;
     setScheduleEntries(newEntries);
+
+    const { weekday, startTime, endTime } = newEntries[index];
+    const updatedEntry = { ...newEntries[index], [field]: value };
+    if (updatedEntry.weekday && updatedEntry.startTime && updatedEntry.endTime) {
+      await fetchAvailableTeachers(updatedEntry.weekday.value, updatedEntry.startTime, updatedEntry.endTime);
+    }
+      if(entry){
+        entry.selectedTeachers = [];
+      }
   };
-  const fetchSubjects=async()=>{
-    setSubjectLoader(true)
-    
-   const res = await axios.get(`http://localhost:8080/api/admin/syllabus/subjects/${currSessionId}`);
-   console.log(res)
-   const data=res.data.data.map((subject)=>{
-    return{
-         value: subject._id,
-    label: `${subject.name} (${subject.code}) [${subject.category}]`
-    }
-   });
-   console.log(data)
-   setSubjects(data);
-
-   setSubjectLoader(false)
-  }
 
 
-  const fetchTeachers=async()=>{
-    setTeacherLoader(true)
-    const res = await axios.get(`http://localhost:8080/api/admin/teachers/all/`);
-    console.log(res)
-    const data=res.data.data.map((teacher)=>{
-     return{
+  const fetchAvailableTeachers = async (weekday, startTime, endTime) => {
+    try {
+      setTeacherLoader(true);
+      // console.log(weekday)
+      // console.log(formatTime(startTime))
+      // console.log(formatTime(endTime))
+      const res = await axios.post(`http://localhost:8080/api/admin/teachers/all/available`, {
+          day: weekday,
+          startTime: formatTime(startTime),
+          endTime: formatTime(endTime)
+      });
+      // console.log(res.data.data)
+      const data = res.data.data.map((teacher) => {
+        return {
           value: teacher._id,
-     label: `${teacher.name} (${teacher.phone})`
-     }
+          label: `${teacher.name} (${teacher.phone})`
+        };
+      });
+      setTeachers(data);
+    } catch (err) {
+      toast.error(err.response.data.message||"Failed to fetch available teachers");
+    } finally {
+      setTeacherLoader(false);
+    }
+  };
+
+
+  // const fetchTeachers = async () => {
+  //   setTeacherLoader(true)
+  //   const res = await axios.get(`http://localhost:8080/api/admin/teachers/all/`);
+  //   // console.log(res)
+  //   const data = res.data.data.map((teacher) => {
+  //     return {
+  //       value: teacher._id,
+  //       label: `${teacher.name} (${teacher.phone})`
+  //     }
+  //   });
+  //   // console.log(data)
+  //   setTeachers(data);
+  //   setTeacherLoader(false)
+
+  // }
+
+
+  const fetchSubjects = async () => {
+    setSubjectLoader(true)
+
+    // console.log(currSessionId)
+    const res = await axios.get(`http://localhost:8080/api/admin/syllabus/subjects/${currSessionId}`);
+    // console.log(res)
+    const data = res.data.data.map((subject) => {
+      return {
+        value: subject._id,
+        label: `${subject.name} (${subject.code}) [${subject.category}]`
+      }
     });
-    console.log(data)
-    setTeachers(data);
-    setTeacherLoader(false)
+    // console.log(data)
+    setSubjects(data);
 
+    setSubjectLoader(false)
   }
+
+
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    if (!selectedSubject || scheduleEntries.length === 0) return;
+    try {
+      e.preventDefault();
+      if (!selectedSubject || scheduleEntries.length === 0) return;
 
-    const isValid = scheduleEntries.every(entry => 
-      entry.weekday && entry.startTime && entry.endTime && entry.selectedTeachers.length > 0
-    );
+      const isValid = scheduleEntries.every(entry =>
+        entry.weekday && entry.startTime && entry.endTime && entry.selectedTeachers.length > 0
+      );
 
-    if (!isValid) {
-      toast.error('Please fill all fields in each schedule entry');
-      return;
-    }
+      if (!isValid) {
+        toast.error('Please fill all fields in each schedule entry');
+        return;
+      }
 
-    setLoading(true);
-    const data={
-      sessionId:currSessionId,
-      subjectId:selectedSubject.value,
-      schedule:[
-        ...scheduleEntries.map((entry) => {
-          return {
-            day: entry.weekday.value,
-            start_time:formatTime( entry.startTime),
-            end_time:formatTime(  entry.endTime),
-            teacherIds:entry.selectedTeachers.map((teacher)=>teacher.value)
+      setLoading(true);
+      const data = {
+        sessionId: currSessionId,
+        subjectId: selectedSubject.value,
+        schedule: [
+          ...scheduleEntries.map((entry) => {
+            return {
+              day: entry.weekday.value,
+              start_time: formatTime(entry.startTime),
+              end_time: formatTime(entry.endTime),
+              teacherIds: entry.selectedTeachers.map((teacher) => teacher.value)
             }
-            }
+          }
           )
-            
-      ]
-    }
-    console.log(data)
-    const res = await axios.post(`http://localhost:8080/api/admin/schedule`,data,{
-      headers: {
-          'Content-Type': 'application/json'}})
-      console.log("lknbv")
-     if(res){
-       onClose();
-       toast.success(' schedules created successfully');
 
-     }
-      setLoading(false);
+        ]
+      }
+      // console.log(data)
+      const res = await axios.post(`http://localhost:8080/api/admin/schedule`, data, {
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      })
+      // console.log("lknbv")
+      if (res) {
+        onClose();
+        toast.success(' schedules created successfully');
+      }
     }
-  
-useEffect(()=>{
-fetchSubjects();
-fetchTeachers()
-},[currSessionId])
+    catch (error) {
+      toast.error(error.response.data.message || 'Failed to create schedules.');
+    }
+    setLoading(false);
+  }
+
+  useEffect(() => {
+    fetchSubjects();
+    // fetchTeachers()
+  }, [currSessionId])
   return (
     <div className="fixed inset-0 backdrop-blur-[1px] flex items-center justify-center p-4 z-20">
       <div className="bg-white rounded-lg p-6 w-4xl shadow-lg  max-h-[80vh] overflow-y-scroll overflow-x-auto">
         <h2 className="text-xl text-black font-bold mb-4">Create New Schedule</h2>
-        
+
         <form onSubmit={handleSubmit}>
           <div className="space-y-4">
             <div>
@@ -174,71 +202,71 @@ fetchTeachers()
               </button>
             )}
             <div className='grid grid-cols-2 gap-4'>
-            {scheduleEntries.map((entry, index) => (
-              <div key={index} className="border p-4 rounded-lg space-y-4 border-gray-200 min-w-[25rem]">
-                <div>
-                  <label className="block text-sm font-medium mb-2 text-gray-700">
-                    Weekday
-                  </label>
-                  <Select
-                    options={weekdays}
-                    value={entry.weekday}
-                    onChange={(selected) => updateScheduleEntry(index, 'weekday', selected)}
-                    placeholder="Select weekday..."
-                    styles={customSelectStyles}
-                  />
-                </div>
-
-                <div className="grid grid-cols-2 gap-4">
+              {scheduleEntries.map((entry, index) => (
+                <div key={index} className="border p-4 rounded-lg space-y-4 border-gray-200 min-w-[25rem]">
                   <div>
                     <label className="block text-sm font-medium mb-2 text-gray-700">
-                      Start Time
+                      Weekday
                     </label>
-                    <DatePicker
-                      selected={entry.startTime}
-                      onChange={(date) => updateScheduleEntry(index, 'startTime', date)}
-                      showTimeSelect
-                      showTimeSelectOnly
-                      timeIntervals={30}
-                      dateFormat="h:mm aa"
-                      className="w-full p-2 border-2 text-[#1e293b] border-gray-200 rounded-md focus:ring-2 focus:ring-transparent focus:border-blue-400 transition-colors placeholder-gray-400 focus:outline-none"
-                      placeholderText="Select start time"
+                    <Select
+                      options={weekdays}
+                      value={entry.weekday}
+                      onChange={(selected) => updateScheduleEntry(index, 'weekday', selected, entry)}
+                      placeholder="Select weekday..."
+                      styles={customSelectStyles}
                     />
                   </div>
+
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm font-medium mb-2 text-gray-700">
+                        Start Time
+                      </label>
+                      <DatePicker
+                        selected={entry.startTime}
+                        onChange={(date) => updateScheduleEntry(index, 'startTime', date, entry)}
+                        showTimeSelect
+                        showTimeSelectOnly
+                        timeIntervals={30}
+                        dateFormat="h:mm aa"
+                        className="w-full p-2 border-2 text-[#1e293b] border-gray-200 rounded-md focus:ring-2 focus:ring-transparent focus:border-blue-400 transition-colors placeholder-gray-400 focus:outline-none"
+                        placeholderText="Select start time"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium mb-2 text-gray-700">
+                        End Time
+                      </label>
+                      <DatePicker
+                        selected={entry.endTime}
+                        onChange={(date) => updateScheduleEntry(index, 'endTime', date, entry)}
+                        showTimeSelect
+                        showTimeSelectOnly
+                        timeIntervals={30}
+                        dateFormat="h:mm aa"
+                        className="w-full p-2 border-2 text-[#1e293b] border-gray-200 rounded-md focus:ring-2 focus:ring-transparent focus:border-blue-400 transition-colors placeholder-gray-400 focus:outline-none"
+                        placeholderText="Select end time"
+                      />
+                    </div>
+                  </div>
+
                   <div>
                     <label className="block text-sm font-medium mb-2 text-gray-700">
-                      End Time
+                      Teachers
                     </label>
-                    <DatePicker
-                      selected={entry.endTime}
-                      onChange={(date) => updateScheduleEntry(index, 'endTime', date)}
-                      showTimeSelect
-                      showTimeSelectOnly
-                      timeIntervals={30}
-                      dateFormat="h:mm aa"
-                      className="w-full p-2 border-2 text-[#1e293b] border-gray-200 rounded-md focus:ring-2 focus:ring-transparent focus:border-blue-400 transition-colors placeholder-gray-400 focus:outline-none"
-                      placeholderText="Select end time"
+                    <Select
+                      isMulti
+                      options={teachers}
+                      value={entry.selectedTeachers}
+                      loading={teacherLoader}
+                      loadingMessage={"loading teachers"}
+                      onChange={(selected) => updateScheduleEntry(index, 'selectedTeachers', selected)}
+                      placeholder="Select teachers..."
+                      styles={customSelectStyles}
                     />
                   </div>
                 </div>
-
-                <div>
-                  <label className="block text-sm font-medium mb-2 text-gray-700">
-                    Teachers
-                  </label>
-                  <Select
-                    isMulti
-                    options={teachers}
-                    value={entry.selectedTeachers}
-                    loading={teacherLoader}
-                    loadingMessage={"loading teachers"}
-                    onChange={(selected) => updateScheduleEntry(index, 'selectedTeachers', selected)}
-                    placeholder="Select teachers..."
-                    styles={customSelectStyles}
-                  />
-                </div>
-              </div>
-            ))}
+              ))}
             </div>
           </div>
 
@@ -248,14 +276,14 @@ fetchTeachers()
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2 text-gray-600 hover:bg-gray-100 rounded-md transition-colors"
+              className="cursor-pointer px-4 py-2 text-gray-600 hover:bg-gray-100 rounded-md transition-colors"
               disabled={loading}
             >
               Cancel
             </button>
             <button
               type="submit"
-              className="px-4 py-2 bg-green-500 text-white rounded-md hover:bg-green-600 transition-colors flex items-center gap-2"
+              className="cursor-pointer px-4 py-2 bg-green-500 text-white rounded-md hover:bg-green-600 transition-colors flex items-center gap-2"
               disabled={loading || scheduleEntries.length === 0}
             >
               {loading && <Loader loading={true} size={10} />}

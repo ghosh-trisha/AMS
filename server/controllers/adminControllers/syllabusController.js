@@ -86,7 +86,7 @@ exports.getAllSyllabusBySession = catchAsync(async (req, res, next) => {
         return next(new ApiError('Session ID is required', 400));
     }
     const session = await Session.findById(sessionId).select("syllabusId");
-    console.log(session);
+    // console.log(session);
 
     if (!session) {
         return next(new ApiError('Session not found', 404));

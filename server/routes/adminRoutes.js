@@ -70,6 +70,7 @@ router.delete('/schedule/:scheduleId', scheduleController.deleteSchedule);
 
 //teacher routes
 router.get('/teachers/all',teacherController.getAllTeachers );
+router.post('/teachers/all/available',teacherController.getAllAvailableTeachers );
 
 
 // student routes

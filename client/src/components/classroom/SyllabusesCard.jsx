@@ -46,7 +46,7 @@ export default function SyllabusesCard({ semesterId }) {
         onClick={() => setShowSyllabuses(!showSyllabuses)}
         className="w-full px-6 py-4 text-left hover:bg-gray-50 transition-colors"
       >
-        <h2 className="text-xl font-semibold flex items-center justify-between">
+        <h2 className="text-xl font-semibold flex items-center justify-between cursor-pointer">
           Syllabuses ({syllabuses.length})
           <span
             className={`transform transition-transform ${

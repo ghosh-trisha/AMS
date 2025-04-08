@@ -14,7 +14,7 @@ const SessionCard = ({ semesterId, setCurrSessionId }) => {
     const fetchSessions = async () => {
       try {
         const res = await axios.get(`http://localhost:8080/api/admin/sessions/${semesterId}`);
-        console.log("Fetched sessions:", res.data.data);
+        // console.log("Fetched sessions:", res.data.data);
         // Assuming the response structure:
         // { status: 'success', data: { currentSession, previousSessions }, results: <number> }
         setSessionData(res.data.data);
@@ -45,7 +45,7 @@ const SessionCard = ({ semesterId, setCurrSessionId }) => {
         onClick={() => setShowRoutine(!showRoutine)}
         className="w-full px-6 py-4 text-left hover:bg-gray-50 transition-colors"
       >
-        <h2 className="text-xl font-semibold flex items-center justify-between">
+        <h2 className="text-xl font-semibold flex items-center justify-between cursor-pointer">
           Sessions
           <span className={`transform transition-transform ${showRoutine ? 'rotate-180' : ''}`}>
             ▼
@@ -60,7 +60,7 @@ const SessionCard = ({ semesterId, setCurrSessionId }) => {
             className="p-4 bg-gray-100 rounded-lg"
             
           >
-            <h3 className={`text-xl font-semibold flex items-center justify-between ${showCurrSession?'bg-white p-2 rounded-lg ':''}`}
+            <h3 className={`text-xl font-semibold flex items-center justify-between ${showCurrSession?'bg-white p-2 rounded-lg ':''} cursor-pointer`}
             onClick={() => setShowCurrSession(!showCurrSession)}>
               Current Session
               <span className={`transform transition-transform ${showCurrSession ? 'rotate-180' : ''}`}>
@@ -107,7 +107,7 @@ const SessionCard = ({ semesterId, setCurrSessionId }) => {
             className="p-4 bg-gray-100 rounded-lg"
             onClick={() => setShowPrevSession(!showPrevSession)}
           >
-            <h3 className="mb-4 text-xl font-semibold flex items-center justify-between">
+            <h3 className="mb-4 text-xl font-semibold flex items-center justify-between cursor-pointer">
               Previous Session
               <span className={`transform transition-transform ${showPrevSession ? 'rotate-180' : ''}`}>
                 ▼

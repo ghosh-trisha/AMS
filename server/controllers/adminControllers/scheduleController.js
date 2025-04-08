@@ -20,7 +20,7 @@ exports.createSchedule = catchAsync(async (req, res, next) => {
   // Check if session and subject exist
   const sessionExists = await Session.findById(sessionId);
   const subjectExists = await Subject.findById(subjectId);
-  
+
   if (!sessionExists) return next(new ApiError('Session not found', 404));
   if (!subjectExists) return next(new ApiError('Subject not found', 404));
 
@@ -33,6 +33,29 @@ exports.createSchedule = catchAsync(async (req, res, next) => {
     // Validate schedule item fields
     if (!day || !start_time || !end_time || !teacherIds || !Array.isArray(teacherIds)) {
       return next(new ApiError('Each schedule item must include day, start_time, end_time, and an array of teacherIds', 400));
+    }
+
+    // ✅ Check for time conflicts
+    const existingSchedules = await Schedule.find({ sessionId, day });
+
+    const hasConflict = existingSchedules.some(existing => {
+      // Convert to Date objects for comparison
+      const newStart = new Date(`1970-01-01T${start_time}`);
+      const newEnd = new Date(`1970-01-01T${end_time}`);
+      const existingStart = new Date(`1970-01-01T${existing.start_time}`);
+      const existingEnd = new Date(`1970-01-01T${existing.end_time}`);
+
+      // 🔁 Check if new schedule overlaps with any existing one
+      return (newStart < existingEnd && newEnd > existingStart);
+    });
+
+    if (hasConflict) {
+      return next(
+        new ApiError(
+          `Schedule conflict detected: another class is already scheduled for session '${sessionId}' on ${day} during ${start_time} - ${end_time}`,
+          400
+        )
+      );
     }
 
     // Check if all teacher IDs are valid
@@ -67,7 +90,6 @@ exports.createSchedule = catchAsync(async (req, res, next) => {
 });
 
 
-
 // Get all schedules for a session
 exports.getAllSchedulesBySession = catchAsync(async (req, res, next) => {
   const { sessionId } = req.params;
@@ -80,94 +102,96 @@ exports.getAllSchedulesBySession = catchAsync(async (req, res, next) => {
   if (!sessionExists) {
     return next(new ApiError('Session not found', 404));
   }
-const schedules = await ScheduleTeacherMapper.aggregate([
-        {
-            $lookup: {
-                from: 'schedules',
-                localField: 'scheduleId',
-                foreignField: '_id',
-                as: 'scheduleDetails'
-            }
-        },
-        { $unwind: '$scheduleDetails' },
-        {
-            $match: {
-                'scheduleDetails.sessionId': new mongoose.Types.ObjectId(sessionId) ,
-                
-            }
-        },
-        {
-            $lookup: {
-                from: 'teachers',
-                localField: 'teacherId',
-                foreignField: '_id',
-                as: 'teacherDetails'
-            }
-        },
-        { $unwind: '$teacherDetails' },
-        {
-            $lookup: {
-                from: 'subjects',
-                localField: 'scheduleDetails.subjectId',
-                foreignField: '_id',
-                as: 'subject'
-            }
-        },
-        { $unwind: '$subject' },
-        {
-            $lookup: {
-                from: 'categories',
-                localField: 'subject.categoryId',
-                foreignField: '_id',
-                as: 'subjectCategory'
-            }
-        },
-        { $unwind: '$subjectCategory' },
-        {
-          $group: {
-              _id: '$scheduleId',
-              id: { $first:'$scheduleId'},
-              day: { $first: '$scheduleDetails.day' },
-              start_time: { $first: '$scheduleDetails.start_time' },
-              end_time: { $first: '$scheduleDetails.end_time' },
-              subjectName: { $first: '$subject.name' },
-              subjectCode: { $first: '$subject.code' },
-              subjectCategory: { $first: '$subjectCategory.name' },
-              teachers: {
-                  $push: {
-                      name: '$teacherDetails.name',
-                      email: '$teacherDetails.email',
-                      phone: '$teacherDetails.phone'
-                  }
-              }
+  const schedules = await ScheduleTeacherMapper.aggregate([
+    {
+      $lookup: {
+        from: 'schedules',
+        localField: 'scheduleId',
+        foreignField: '_id',
+        as: 'scheduleDetails'
+      }
+    },
+    { $unwind: '$scheduleDetails' },
+    {
+      $match: {
+        'scheduleDetails.sessionId': new mongoose.Types.ObjectId(sessionId),
+
+      }
+    },
+    {
+      $lookup: {
+        from: 'teachers',
+        localField: 'teacherId',
+        foreignField: '_id',
+        as: 'teacherDetails'
+      }
+    },
+    { $unwind: '$teacherDetails' },
+    {
+      $lookup: {
+        from: 'subjects',
+        localField: 'scheduleDetails.subjectId',
+        foreignField: '_id',
+        as: 'subject'
+      }
+    },
+    { $unwind: '$subject' },
+    {
+      $lookup: {
+        from: 'categories',
+        localField: 'subject.categoryId',
+        foreignField: '_id',
+        as: 'subjectCategory'
+      }
+    },
+    { $unwind: '$subjectCategory' },
+    {
+      $group: {
+        _id: '$scheduleId',
+        id: { $first: '$scheduleId' },
+        day: { $first: '$scheduleDetails.day' },
+        start_time: { $first: '$scheduleDetails.start_time' },
+        end_time: { $first: '$scheduleDetails.end_time' },
+        subjectName: { $first: '$subject.name' },
+        subjectCode: { $first: '$subject.code' },
+        subjectCategory: { $first: '$subjectCategory.name' },
+        teachers: {
+          $push: {
+            name: '$teacherDetails.name',
+            email: '$teacherDetails.email',
+            phone: '$teacherDetails.phone'
           }
-      },
-      {
-        $sort: {
-          'day': 1,
-          'start_time': 1
         }
-      },
-        {
-            $group: {
-                _id: '$day',
-                schedules: { $push: {
-                  id: '$id',
-                  day: '$day' ,
-                start_time: '$start_time',
-                end_time: '$end_time' ,
-                subjectName: '$subjectName' ,
-                subjectCode:  '$subjectCode' ,
-                subjectCategory: '$subjectCategory' ,
-                teachers: '$teachers'
-              
-              } },
-               
-            }
+      }
+    },
+    {
+      $sort: {
+        'day': 1,
+        'start_time': 1
+      }
+    },
+    {
+      $group: {
+        _id: '$day',
+        schedules: {
+          $push: {
+            id: '$id',
+            day: '$day',
+            start_time: '$start_time',
+            end_time: '$end_time',
+            subjectName: '$subjectName',
+            subjectCode: '$subjectCode',
+            subjectCategory: '$subjectCategory',
+            teachers: '$teachers'
+
+          }
         },
-       
-        
-    ]);
+
+      }
+    },
+
+
+  ]);
 
   res.status(200).json({
     status: 'success',
@@ -181,9 +205,9 @@ const schedules = await ScheduleTeacherMapper.aggregate([
 exports.deleteSchedule = catchAsync(async (req, res, next) => {
   const { scheduleId } = req.params;
 
-   await Schedule.findByIdAndDelete(scheduleId)
-   res.status(200).json({
+  await Schedule.findByIdAndDelete(scheduleId)
+  res.status(200).json({
     status: 'success',
-   message : 'schedule deleted successfuly'
+    message: 'schedule deleted successfuly'
   });
 })

@@ -9,8 +9,21 @@ const LandingPage = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-green-500 to-blue-500 flex items-center justify-center">
       <div className="bg-white p-8 rounded-2xl shadow-xl max-w-lg w-full text-center">
-        <h1 className="text-4xl font-bold text-gray-800 mb-4">Attendance Monitoring System</h1>
-        <p className="text-gray-600 mb-8">Welcome! Please register or log in to continue.</p>
+
+         {/* Title */}
+         <h1 className="text-4xl font-bold text-green-600 mb-4">
+          Welcome to MAKAUT👋🏻
+        </h1>
+
+        {/* Welcome Text - Newly Added */}
+        <h2 className="text-xl font-semibold text-gray-600 mb-4">
+          Attendance Monitoring System
+        </h2>
+
+        {/* Subtext */}
+        <p className="text-gray-600 mb-8">
+          Please register or log in to continue.
+        </p>
 
         <div className="flex flex-col gap-4">
           <button

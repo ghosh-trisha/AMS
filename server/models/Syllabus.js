@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 
 const syllabusSchema = new mongoose.Schema({ 
-    name: { type: Number, required: true,  },
+    name: { type: Number, required: true  },
     semesterId: { type: mongoose.Schema.Types.ObjectId, ref: 'Semester', required: true }
 }, {
     timestamps: true
