@@ -844,3 +844,7 @@
 {"level":"info","message":"MongoDB connection established","timestamp":"2025-04-08T02:44:48.588Z"}
 {"level":"info","message":"MongoDB connection established","timestamp":"2025-04-08T02:47:24.544Z"}
 {"isOperational":true,"level":"error","message":"Schedule conflict detected: another class is already scheduled for session '67dd38a69f6509d2f5073792' on Monday during 07:30 - 15:00","stack":"Error: Schedule conflict detected: another class is already scheduled for session '67dd38a69f6509d2f5073792' on Monday during 07:30 - 15:00\n    at C:\\Users\\hp\\OneDrive\\Desktop\\makaut\\AMS\\server\\controllers\\adminControllers\\scheduleController.js:54:9\n    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)\n    at async C:\\Users\\hp\\OneDrive\\Desktop\\makaut\\AMS\\server\\utils\\catchAsync.js:4:12","status":"error","statusCode":400,"timestamp":"2025-04-08T02:47:49.224Z"}
+{"level":"info","message":"MongoDB connection established","timestamp":"2025-04-08T03:18:14.905Z"}
+{"level":"info","message":"MongoDB connection established","timestamp":"2025-04-08T03:19:28.020Z"}
+{"level":"info","message":"MongoDB connection established","timestamp":"2025-04-08T03:20:07.748Z"}
+{"level":"info","message":"MongoDB connection established","timestamp":"2025-04-08T03:20:10.924Z"}
