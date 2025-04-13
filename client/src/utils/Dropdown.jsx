@@ -1,7 +1,8 @@
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import Select from 'react-select';
 import axios from 'axios';
+import toast from 'react-hot-toast';
 
 const DropdownComponent = ({
   onOffState,
@@ -19,7 +20,16 @@ const DropdownComponent = ({
   const [newName, setNewName] = useState('');
   const [isCreating, setIsCreating] = useState(false);
 
-  // Fetch dropdown options from API and append "Add Others" option
+  const inputRef = useRef(null); 
+
+
+  useEffect(() => {
+    if (showPopup && inputRef.current) {
+      inputRef.current.focus();
+    }
+  }, [showPopup]);
+
+  // Fetch dropdown options from API and append "Add Others +" option
   useEffect(() => {
     if (apiUrl) {
       axios
@@ -29,8 +39,8 @@ const DropdownComponent = ({
             value: item._id,
             label: item.name
           }));
-          // Append the default "Add Others" option
-          const addOthers = isAddOther ? [...formatted, { value: 'add-others', label: 'add others +' }] : formatted;
+          // Append the default "Add Others +" option
+          const addOthers = isAddOther ? [...formatted, { value: 'add-others', label: 'Add Others +' }] : formatted;
           
           setOptions(addOthers);
         })
@@ -41,7 +51,7 @@ const DropdownComponent = ({
   }, [apiUrl]);
 
   const handleChange = (option) => {
-    // If the user selects "Add Others", show the popup
+    // If the user selects "Add Others +", show the popup
     if (option.value === 'add-others') {
       setShowPopup(true);
       return;
@@ -64,17 +74,20 @@ const DropdownComponent = ({
       payload[parentField] = parentId;
     }
 
+    console.log("Payload for creating new option:", payload);
     axios
       .post(createApiUrl, payload)
       .then((res) => {
+        console.log(res)
         // Assume the response returns the newly created item
         const newItem = {
           value: res.data.data._id,
           label: res.data.data.name
         };
-        // Add the new item to the options list (before the "Add Others" option)
+        // console.log(res.data.data)
+        // Add the new item to the options list (before the "Add Others +" option)
         const updatedOptions = options.filter(opt => opt.value !== 'add-others');
-        setOptions([...updatedOptions, newItem, { value: 'add-others', label: 'Add Others' }]);
+        setOptions([...updatedOptions, newItem, { value: 'add-others', label: 'Add Others +' }]);
         // Set the new item as the selected option
         setSelectedOption(newItem);
         getOnChangeValue(newItem.value);
@@ -86,6 +99,7 @@ const DropdownComponent = ({
         setShowPopup(false);
       })
       .catch((err) => {
+        toast.error('Failed to create new option. Please try with another name.');
         console.error('Error creating new option:', err);
       })
       .finally(() => {
@@ -171,6 +185,7 @@ const DropdownComponent = ({
           }}>
             <div style={{ marginBottom: '0.5rem' }}>Enter new name:</div>
             <input
+            ref={inputRef} 
               type="text"
               value={newName}
               onChange={(e) => setNewName(e.target.value)}

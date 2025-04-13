@@ -3,6 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import DropdownComponent from '../../utils/Dropdown';
 import axios from 'axios';
 import toast from 'react-hot-toast';
+import { AiFillEye, AiFillEyeInvisible } from 'react-icons/ai';
+
 
 const StudentPopup = ({ setShowPopup }) => {
   const navigate = useNavigate();
@@ -23,10 +25,19 @@ const StudentPopup = ({ setShowPopup }) => {
   const [phone, setPhone] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
   const [rollNumber, setRollNumber] = useState('');
   const [registrationNumber, setRegistrationNumber] = useState('');
 
+  const [passwordVissible, setPasswordVisible] = useState(false);
+  const [confirmPasswordVissible, setConfirmPasswordVisible] = useState(false);
+
   const handleRegister = async () => {
+    if (password !== confirmPassword) {
+      toast.error("Passwords do not match");
+      return;
+    }
+    
     try {
       const requestData = role === 'student'
         ? { name, phone, email, password, rollNumber, registrationNumber, departmentId, levelId, programId, courseId, semesterId }
@@ -85,7 +96,23 @@ const StudentPopup = ({ setShowPopup }) => {
         <input type="text" placeholder="Name" value={name} onChange={(e) => setName(e.target.value)} className="w-full p-2 border border-gray-300 rounded-md mb-4" />
         <input type="text" placeholder="Phone Number" value={phone} onChange={(e) => setPhone(e.target.value)} className="w-full p-2 border border-gray-300 rounded-md mb-4" />
         <input type="email" placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} className="w-full p-2 border border-gray-300 rounded-md mb-4" />
-        <input type="password" placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)} className="w-full p-2 border border-gray-300 rounded-md mb-4" />
+        <div className='flex items-center justify-between mb-4'>
+          <input type={passwordVissible ? "text" : "password"} placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)} className="w-full p-2 border border-gray-300 rounded-md mb-4" />
+          <div className='p-2 bg-gray-100 mb-2 ml-2 rounded-md cursor-pointer'>{
+            passwordVissible ?
+              <AiFillEyeInvisible onClick={() => setPasswordVisible(!passwordVissible)} className="text-gray-500 text-2xl cursor-pointer" /> :
+              <AiFillEye onClick={() => setPasswordVisible(!passwordVissible)} className="text-gray-500 text-2xl cursor-pointer" />
+          }</div>
+        </div>
+
+        <div className='flex items-center justify-between mb-4'>
+          <input type={confirmPasswordVissible ? "text" : "password"} placeholder="Confirm Password" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} className="w-full p-2 border border-gray-300 rounded-md mb-4" />
+          <div className='p-2 bg-gray-100 mb-2 ml-2 rounded-md cursor-pointer'>{
+            confirmPasswordVissible ?
+              <AiFillEyeInvisible onClick={() => setConfirmPasswordVisible(!confirmPasswordVissible)} className="text-gray-500 text-2xl cursor-pointer" /> :
+              <AiFillEye onClick={() => setConfirmPasswordVisible(!confirmPasswordVissible)} className="text-gray-500 text-2xl cursor-pointer" />
+          }</div>
+        </div>
 
         <div className="flex justify-end gap-4">
           <button onClick={() => setShowPopup(false)} className="bg-gray-400 hover:bg-gray-500 text-white py-3 px-6 rounded-xl text-lg font-semibold cursor-pointer">Cancel</button>

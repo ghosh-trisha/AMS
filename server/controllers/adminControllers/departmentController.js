@@ -11,7 +11,7 @@ exports.createDepartment = catchAsync(async (req, res, next) => {
     }
 
     // Normalize name for consistent storage
-    const formattedName = name.trim().toLowerCase().replace(/\s+/g, ' ');
+    const formattedName = name.trim().toUpperCase().replace(/\s+/g, ' ');
 
     // Check if department already exists
     const departmentExists = await Department.findOne({ name: formattedName });

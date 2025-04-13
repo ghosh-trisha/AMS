@@ -24,6 +24,18 @@ const CreateCourseModal = ({ isOpen, onClose }) => {
 
   // Handler for closing the modal
   const handleClose = () => {
+    setDepartmentId(null);
+    setLevelId(null);
+    setProgramId(null);
+    setCourseId(null);
+    setSemesterId(null);
+
+    setDepartmentEnabled(true);
+    setLevelEnabled(false);
+    setProgramEnabled(false);
+    setCourseEnabled(false);
+    setSemesterEnabled(false);
+
     onClose();
   };
 
@@ -62,7 +74,7 @@ const CreateCourseModal = ({ isOpen, onClose }) => {
   return (
     <div className="fixed inset-0 backdrop-blur-[1px] flex items-center justify-center p-4 z-50">
       <div className="bg-white rounded-xl p-6 w-full max-w-4xl shadow-2xl max-h-[90vh] flex flex-col">
-        <h2 className="text-2xl font-bold mb-6 text-gray-800">Create New Course</h2>
+        <h2 className="text-2xl font-bold mb-6 text-gray-800">View Course</h2>
 
         {/* SCROLLABLE CONTENT */}
         <div className="flex-1 overflow-y-auto min-h-72 pr-2">
@@ -156,7 +168,7 @@ const CreateCourseModal = ({ isOpen, onClose }) => {
         <div className="flex justify-end gap-3 mt-6 border-t pt-4">
           <button
             onClick={handleClose}
-            className="px-4 py-2 text-gray-600 hover:bg-gray-100 rounded-md"
+            className="px-4 py-2 text-gray-600 hover:bg-gray-100 rounded-md cursor-pointer"
           >
             Cancel
           </button>
@@ -164,7 +176,7 @@ const CreateCourseModal = ({ isOpen, onClose }) => {
             onClick={() => {
                 navigate(`/admin/class/${semesterId}`)
               }}
-            className="px-4 py-2 bg-green-500 text-white rounded-md hover:bg-green-600"
+            className="px-4 py-2 bg-green-500 text-white rounded-md hover:bg-green-600 cursor-pointer"
           >
             View Class
           </button>

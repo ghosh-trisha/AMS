@@ -6,11 +6,17 @@ const mongoose = require('mongoose');
 const Session = require('../../models/Session');
 const Subject = require('../../models/Subject');
 const Teacher = require('../../models/Teacher');
+const Building = require('../../models/Building');
+const Room = require('../../models/Room');
 
 
 // Create schedule for a session
 exports.createSchedule = catchAsync(async (req, res, next) => {
   const { sessionId, subjectId, schedule } = req.body;
+
+  // console.log('Schedule data:', schedule);
+  // console.log('Session ID:', sessionId);
+  // console.log('Subject ID:', subjectId);
 
   // Validate request body
   if (!sessionId || !subjectId || !schedule || !Array.isArray(schedule)) {
@@ -28,11 +34,11 @@ exports.createSchedule = catchAsync(async (req, res, next) => {
 
   // Iterate over each schedule item
   for (const item of schedule) {
-    const { day, start_time, end_time, teacherIds } = item;
+    const { day, start_time, end_time, teacherIds, buildingId, roomId } = item;
 
     // Validate schedule item fields
-    if (!day || !start_time || !end_time || !teacherIds || !Array.isArray(teacherIds)) {
-      return next(new ApiError('Each schedule item must include day, start_time, end_time, and an array of teacherIds', 400));
+    if (!day || !start_time || !end_time || !teacherIds || !Array.isArray(teacherIds) || !buildingId || !roomId) {
+      return next(new ApiError('Each schedule item must include day, start_time, end_time, and an array of teacherIds, buildingId, roomId', 400));
     }
 
     // ✅ Check for time conflicts
@@ -52,7 +58,7 @@ exports.createSchedule = catchAsync(async (req, res, next) => {
     if (hasConflict) {
       return next(
         new ApiError(
-          `Schedule conflict detected: another class is already scheduled for session '${sessionId}' on ${day} during ${start_time} - ${end_time}`,
+          `Schedule conflict detected: another class is already scheduled on ${day} during ${start_time} - ${end_time}`,
           400
         )
       );
@@ -64,6 +70,17 @@ exports.createSchedule = catchAsync(async (req, res, next) => {
       return next(new ApiError('Invalid teacher ID(s) provided', 400));
     }
 
+    // Check if the building and room IDs are valid (if applicable)
+    const buildingExists = await Building.findById(buildingId);
+    if (!buildingExists) {
+      return next(new ApiError('Building not found', 404));
+    }
+
+    const roomExists = await Room.findOne({ _id: roomId, buildingId });
+    if (!roomExists) {
+      return next(new ApiError('Room not found in the specified building', 404));
+    }
+
     // Create a schedule entry
     const newSchedule = await Schedule.create({
       sessionId,
@@ -71,6 +88,8 @@ exports.createSchedule = catchAsync(async (req, res, next) => {
       day,
       start_time,
       end_time,
+      buildingId,
+      roomId
     });
     createdSchedules.push(newSchedule);
 

@@ -11,7 +11,7 @@ exports.createCourse = catchAsync(async (req, res, next) => {
     }
 
     // Normalize course name (trim, lowercase, and replace multiple spaces with a single space)
-    const formattedCourseName = name.trim().toLowerCase().replace(/\s+/g, ' ');
+    const formattedCourseName = name.trim().toUpperCase().replace(/\s+/g, ' ');
 
     // Check if the program exists
     const program = await Program.findById(programId);

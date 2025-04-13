@@ -75,6 +75,19 @@ const StudentClassesPage = () => {
     fetchTodaysClasses();
   }, [id]);
 
+  const getStatusColor = (status) => {
+    switch (status?.toLowerCase()) {
+      case 'accepted':
+        return 'bg-green-500';
+      case 'rejected':
+        return 'bg-red-500';
+      case 'pending':
+        return 'bg-yellow-500';
+      default:
+        return 'bg-gray-500';
+    }
+  };
+
   if (loading) {
     return (
       <div className="flex justify-center items-center h-screen">
@@ -115,7 +128,11 @@ const StudentClassesPage = () => {
                 </div>
 
                 {cls.attendanceStatus ? (
-                  <div className="px-4 py-2 bg-yellow-500 text-white rounded-md capitalize">
+                  <div
+                    className={`px-4 py-2 text-white rounded-md capitalize ${getStatusColor(
+                      cls.attendanceStatus
+                    )}`}
+                  >
                     {cls.attendanceStatus}
                   </div>
                 ) : (

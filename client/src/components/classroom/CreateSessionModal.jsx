@@ -47,7 +47,7 @@ const CreateSessionModal = ({ onClose, semesterId }) => {
       toast.success('Academic session created successfully!');
       onClose();
     } catch (error) {
-      toast.error('Failed to create session');
+      toast.error(error.data.message || 'Failed to create session');
     } finally {
       setLoading(false);
     }

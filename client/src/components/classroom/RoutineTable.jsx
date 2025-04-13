@@ -7,7 +7,7 @@ import toast from 'react-hot-toast';
 import HashLoader from "react-spinners/HashLoader";
 
 const weekdays = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-const timelineWidth = 850;
+const timelineWidth = 800;
 
 const RoutineTimeline = ({ sessionId }) => {
   const [routineData, setRoutineData] = useState([]);
@@ -107,7 +107,7 @@ const [isDeleting, setIsDeleting] = useState(false);
       {weekdays.map(day => {
         const schedules = routineData.find(d => d._id === day)?.schedules || [];
         return (
-          <div key={day} className="flex items-center h-[70px]">
+          <div key={day} className="flex items-center h-[80px]">
             <div className="w-[120px] pr-2 text-right font-semibold">{day}</div>
             <div className="relative bg-gray-50 border border-gray-200 rounded-md w-full h-full" style={{ width: timelineWidth }}>
               {schedules.map((sch, idx) => {
@@ -121,12 +121,14 @@ const [isDeleting, setIsDeleting] = useState(false);
                   Code: ${sch.subjectCode}
                   Time: ${formatTime(sch.start_time)} - ${formatTime(sch.end_time)}
                   Teachers: ${sch.teachers.map(t => t.name).join(', ')}
+                  Building: ${sch.roomId}
+                  Room: ${sch.roomId}
                 `;
 
                 return (
                   <div
                     key={idx}
-                    className="absolute top-2 bottom-2 bg-blue-200 text-blue-900 rounded-md shadow px-2 py-1 text-sm cursor-pointer hover:bg-blue-300 transition-all group"
+                    className="absolute top-1 bottom-1 bg-blue-200 text-blue-900 rounded-md shadow px-2 py-1 text-sm cursor-pointer hover:bg-blue-300 transition-all group"
                     style={{ left, width }}
                     data-tooltip-id={`tooltip-${day}-${idx}`}
                     data-tooltip-content={tooltipContent}

@@ -12,7 +12,7 @@ exports.createLevel = catchAsync(async (req, res, next) => {
     }
 
     // Normalize level name (trim, lowercase, and replace multiple spaces with a single space)
-    const formattedLevelName = name.trim().toLowerCase().replace(/\s+/g, ' ');
+    const formattedLevelName = name.trim().toUpperCase().replace(/\s+/g, ' ');
 
     // Check if department exists
     const department = await Department.findById(departmentId);

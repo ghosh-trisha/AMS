@@ -19,6 +19,16 @@ const CreateCourseModal = ({ isOpen, onClose }) => {
 
   // Handler for closing the modal
   const handleClose = () => {
+    setDepartmentId(null);
+    setLevelId(null);
+    setProgramId(null);
+    setCourseName('');
+    setNumSemesters('');
+
+    setDepartmentEnabled(true);
+    setLevelEnabled(false);
+    setProgramEnabled(false);
+    
     onClose();
   };
 
@@ -157,13 +167,13 @@ const CreateCourseModal = ({ isOpen, onClose }) => {
         <div className="flex justify-end gap-3 mt-6 border-t pt-4">
           <button
             onClick={handleClose}
-            className="px-4 py-2 text-gray-600 hover:bg-gray-100 rounded-md"
+            className="px-4 py-2 text-gray-600 hover:bg-gray-100 rounded-md cursor-pointer"
           >
             Cancel
           </button>
           <button
             onClick={handleCreateCourse}
-            className="px-4 py-2 bg-green-500 text-white rounded-md hover:bg-green-600"
+            className="px-4 py-2 bg-green-500 text-white rounded-md hover:bg-green-600 cursor-pointer"
           >
             Create Course
           </button>

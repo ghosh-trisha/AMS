@@ -186,8 +186,8 @@ exports.getTodaysClassesAsTeacher = catchAsync(async (req, res, next) => {
       $project: {
         _id: 0,
         day: 1,
-        startTime: 1,
-        endTime: 1,
+        startTime: '$start_time',
+        endTime: '$end_time',
         subjectName: '$subject.name',
         subjectCode: '$subject.code',
         subjectCategory: '$subjectCategory.name',
@@ -206,6 +206,7 @@ exports.getTodaysClassesAsTeacher = catchAsync(async (req, res, next) => {
   //   return next(new ApiError('No classes found for today', 404));
   // }
 
+ 
   res.status(200).json({
     status: 'success',
     results: classes.length,

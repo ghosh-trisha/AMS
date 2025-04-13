@@ -11,7 +11,7 @@ exports.createProgram = catchAsync(async (req, res, next) => {
     }
 
     // Normalize program name (trim, lowercase, and replace multiple spaces with a single space)
-    const formattedProgramName = name.trim().toLowerCase().replace(/\s+/g, ' ');
+    const formattedProgramName = name.trim().toUpperCase().replace(/\s+/g, ' ');
 
     // Check if level exists
     const level = await Level.findById(levelId);

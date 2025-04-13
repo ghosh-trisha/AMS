@@ -4,12 +4,16 @@ import axios from 'axios';
 import toast from 'react-hot-toast';
 import Cookies from "js-cookie";
 import { useRole } from '../contexts/roleContext'
+import { AiFillEye, AiFillEyeInvisible } from 'react-icons/ai';
+
 
 const LoginPopup = ({ setShowPopup }) => {
   const navigate = useNavigate();
   const [role, setRole] = useState('student');  
   const [identifier, setIdentifier] = useState(''); // Email, Roll, or Reg Number for students
   const [password, setPassword] = useState('');
+  const [passwordVissible, setPasswordVisible] = useState(false);
+
   const roleContext=useRole();
   const decodeToken = (token) => {
     try {
@@ -92,14 +96,26 @@ const LoginPopup = ({ setShowPopup }) => {
           onChange={(e) => setIdentifier(e.target.value)}
           className="w-full p-2 border border-gray-300 rounded-md mb-4"
         />
-        
+
+        <div className='flex items-center justify-between mb-4'>
         <input
-          type="password"
+          type={passwordVissible?"text":"password"}
           placeholder="Password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           className="w-full p-2 border border-gray-300 rounded-md mb-4"
         />
+        <div className='p-2 bg-gray-100 mb-4 ml-2 rounded-md cursor-pointer'>
+          {
+            passwordVissible ? (
+              <AiFillEyeInvisible  className='text-2xl text-gray-600' onClick={() => setPasswordVisible(!passwordVissible)}/>
+            ) : (
+              <AiFillEye className='text-2xl text-gray-600' onClick={() => setPasswordVisible(!passwordVissible)}/>
+            )
+          }
+        </div>
+        </div>
+  
 
         <div className="flex justify-end gap-4">
           <button onClick={() => setShowPopup(false)} className="bg-gray-400 hover:bg-gray-500 text-white py-3 px-6 rounded-xl text-lg font-semibold cursor-pointer">

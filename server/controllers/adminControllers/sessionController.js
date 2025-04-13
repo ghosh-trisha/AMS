@@ -65,7 +65,7 @@ exports.getAllSessionsBySemester = catchAsync(async (req, res, next) => {
       .select('-createdAt -updatedAt -__v');
   
     if (sessions.length === 0) {
-      return res.status(404).json({ message: 'No sessions found for this semester' });
+      return res.status(400).json({ message: 'No sessions found for this semester' });
     }
   
     // Extract current session and previous sessions

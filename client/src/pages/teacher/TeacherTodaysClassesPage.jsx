@@ -20,8 +20,9 @@ const TodaysClassesForTeacher = () => {
     const fetchClasses = async () => {
       try {
         const res = await axios.get(`http://localhost:8080/api/teacher/classes/${teacherId}`);
+        // console.log('Fetched classes:', res.data.data);
         let classesData = res.data.data || [];
-        classesData.sort((a, b) => toMinutes(a.start_time) - toMinutes(b.start_time));
+        classesData.sort((a, b) => toMinutes(a.startTime) - toMinutes(b.startTime));
         setClasses(classesData);
       } catch (err) {
         setError(err.response?.data?.message || 'Error fetching classes');
@@ -34,7 +35,7 @@ const TodaysClassesForTeacher = () => {
   }, [teacherId]);
 
   const handleCardClick = (cls) => {
-    console.log('Class clicked:', cls.classId);
+    // console.log('Class clicked:', cls.classId);
     navigate(`/teacher/requests/${cls.classId}`);
   };
 
@@ -61,7 +62,7 @@ const TodaysClassesForTeacher = () => {
                 </div>
                 <div className="flex items-center gap-2 text-gray-500">
                   <Clock className="w-5 h-5" />
-                  <span>{cls.start_time} - {cls.end_time}</span>
+                  <span>{cls.startTime} - {cls.endTime}</span>
                 </div>
               </div>
               <h2 className="text-xl font-bold text-gray-800 mb-1 flex items-center gap-2">

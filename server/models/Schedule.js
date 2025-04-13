@@ -7,6 +7,7 @@ const scheduleSchema = new mongoose.Schema({
   start_time: { type: String, required: true },
   end_time: { type: String, required: true },
   subjectId: { type: mongoose.Schema.Types.ObjectId, ref: 'Subject', required: true },
+  roomId: { type: mongoose.Schema.Types.ObjectId, ref: 'Room', required: true },
 }, {
   timestamps: true
 });
