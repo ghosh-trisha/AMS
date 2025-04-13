@@ -86,12 +86,8 @@ router.get('/building',buildingController.getAllBuildings );
 
 // room routes
 router.post('/room', roomController.createRoom);
-router.get('/room/:buildingId', ()=>{
-    console.log("all rooms")
-},roomController.getAllRoomsByBuilding);
-router.get('/room/available', ()=>{
-    console.log("available rooms")
-},roomController.getAvailableRooms);
+router.post('/room/available', roomController.getAvailableRooms);
+router.get('/room/:buildingId', roomController.getAllRoomsByBuilding);
 
 
 module.exports = router;

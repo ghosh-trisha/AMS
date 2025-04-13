@@ -84,12 +84,16 @@ const CreateScheduleModal = ({ currSessionId, onClose, onScheduleCreated }) => {
       await fetchAvailableBuildings();
     }
     if (updatedEntry.weekday && updatedEntry.startTime && updatedEntry.endTime && updatedEntry.buildingId) {
-      await fetchAvailableRooms(updatedEntry.buildingId);
+      
+      await fetchAvailableRooms(updatedEntry.weekday.value, updatedEntry.startTime, updatedEntry.endTime, updatedEntry.buildingId);
     }
     if (entry && (caller === "weekday" || caller === "startTime" || caller === "endTime")) {
       entry.selectedTeachers = [];
       entry.buildingId = '';
       entry.roomId = '';
+    }
+    if(entry && (caller=="building")){
+      entry.roomId = ''
     }
   };
 
@@ -134,10 +138,16 @@ const CreateScheduleModal = ({ currSessionId, onClose, onScheduleCreated }) => {
     }
   };
 
-  const fetchAvailableRooms = async (buildingId) => {
+  const fetchAvailableRooms = async (weekday, startTime, endTime, buildingId) => {
     try {
       setRoomLoader(true);
-      const res = await axios.get(`http://localhost:8080/api/admin/room/${buildingId.value}`);
+
+      const res = await axios.post(`http://localhost:8080/api/admin/room/available`, {
+        buildingId: buildingId.value,
+        day: weekday,
+        start_time: formatTime(startTime),
+        end_time: formatTime(endTime)
+      });
 
       if (res.data.data.length === 0) {
         toast.error("No rooms available in this building");

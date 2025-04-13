@@ -3,6 +3,7 @@ const catchAsync = require('../../utils/catchAsync');
 const Building = require('../../models/Building');
 const Room = require('../../models/Room');
 const Schedule = require('../../models/Schedule');
+const mongoose = require('mongoose');
 
 
 // Create a new room under an existing building
@@ -43,50 +44,35 @@ exports.createRoom = catchAsync(async (req, res, next) => {
 
 // Get all rooms under a specific building by buildingId
 exports.getAllRoomsByBuilding = catchAsync(async (req, res, next) => {
-    console.log("test 0")
 
-    console.log('Request params:', req.params);
+    const { buildingId } = req.params;
+
+    // Check if buildingId is provided
+    if (!buildingId) {
+        return res.status(400).json({ message: 'Building ID is required in params' });
+    }
+
+    // Check if the building exists
+    const building = await Building.findById(buildingId);
+    if (!building) {
+        return res.status(404).json({ message: 'Building not found' });
+    }
+
+    // Fetch rooms under the specified building
+    const rooms = await Room.find({ buildingId }).select('-__v -createdAt -updatedAt');
 
     return res.status(200).json({
-        message: 'All rooms under building',
-        data: [], 
+        message: `Rooms under building: ${building.name}`,
+        total: rooms.length,
+        data: rooms,
     });
-
-    // const { buildingId } = req.params;
-
-    // console.log("test 1")
-
-    // // Check if buildingId is provided
-    // if (!buildingId) {
-    //     return res.status(400).json({ message: 'Building ID is required in params' });
-    // }
-
-    // // Check if the building exists
-    // const building = await Building.findById(buildingId);
-    // if (!building) {
-    //     return res.status(404).json({ message: 'Building not found' });
-    // }
-
-    // // Fetch rooms under the specified building
-    // const rooms = await Room.find({ buildingId }).select('-__v -createdAt -updatedAt');
-
-    // console.log("test 2")
-
-    // return res.status(200).json({
-    //     message: `Rooms under building: ${building.name}`,
-    //     total: rooms.length,
-    //     data: rooms,
-    // });
 });
 
 
 // Get all available rooms in a building for a specific day and time range
 exports.getAvailableRooms = catchAsync(async (req, res, next) => {
-    console.log("test")
 
     const { buildingId, day, start_time, end_time } = req.body;
-
-    console.log('Request body:', req.body);
 
     // Validate required query params
     if (!buildingId || !day || !start_time || !end_time) {
