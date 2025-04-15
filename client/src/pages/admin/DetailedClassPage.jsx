@@ -15,11 +15,9 @@ const DetailedDemoClassroom = () => {
   const [showCurrSession, setshowCurrSession] = useState(false);
   const [showPrevSession, setshowPrevSession] = useState(false);
   const [papers, setPapers] = useState([]);
-  
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [paperToDelete, setPaperToDelete] = useState(null);
 
-  // const [showPrevSession, setshowPrevSession] = useState(false);
   const [currSessionId, setCurrSessionId] = useState(null);
  
 
@@ -64,9 +62,6 @@ const DetailedDemoClassroom = () => {
     return <Loader loading={loading} />;
   }
 
-//   if (!classroom) {
-//     return <div className="p-6">Classroom not found</div>;
-//   }
 
   return (
     <div className="p-6">

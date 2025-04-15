@@ -16,6 +16,8 @@ const RoutineTimeline = ({ sessionId }) => {
   const [isLoading, setIsLoading] = useState(true);
 const [isDeleting, setIsDeleting] = useState(false);
 
+// console.log("sessionId --> ", sessionId)
+
 
   useEffect(() => {
     const fetchData = async () => {

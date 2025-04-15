@@ -70,15 +70,29 @@ exports.getAllSessionsBySemester = catchAsync(async (req, res, next) => {
   
     // Extract current session and previous sessions
     const currentSession = sessions[0];
-    const previousSessions = sessions.slice(1).map(session => session.academicYear);
   
     // Fetch subjects for the current session using syllabusId
     const subjects = await Subject.find({ syllabusId: currentSession.syllabusId._id })
-      .populate('categoryId', 'name') // Populate category name
+      .populate('categoryId', 'name')  
       .select('name code categoryId');
   
     // Attach subjects to the current session
     currentSession._doc.subjects = subjects;
+
+    const previousSessions = await Promise.all(
+      sessions.slice(1).map(async (session) => {
+        const subjects = await Subject.find({ syllabusId: session.syllabusId._id })
+          .populate('categoryId', 'name')
+          .select('name code categoryId');
+  
+        return {
+          id: session._id,
+          academicYear: session.academicYear,
+          syllabusId: session.syllabusId,
+          subjects,  
+        };
+      })
+    );
   
     res.status(200).json({
       status: 'success',

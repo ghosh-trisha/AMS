@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import RoutineTable from "./RoutineTable"
+import PreviousSessionPopup from "./PreviousSessionPopup";
 
 const SessionCard = ({ semesterId, setCurrSessionId }) => {
   const [showRoutine, setShowRoutine] = useState(false);
@@ -10,13 +11,12 @@ const SessionCard = ({ semesterId, setCurrSessionId }) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
+  const [selectedPrevSession, setSelectedPrevSession] = useState(null);
+
   useEffect(() => {
     const fetchSessions = async () => {
       try {
         const res = await axios.get(`http://localhost:8080/api/admin/sessions/${semesterId}`);
-        // console.log("Fetched sessions:", res.data.data);
-        // Assuming the response structure:
-        // { status: 'success', data: { currentSession, previousSessions }, results: <number> }
         setSessionData(res.data.data);
         setCurrSessionId(res.data.data.currentSession._id)
       } catch (err) {
@@ -58,10 +58,10 @@ const SessionCard = ({ semesterId, setCurrSessionId }) => {
           {/* Current Session */}
           <div
             className="p-4 bg-gray-100 rounded-lg"
-            
+
           >
-            <h3 className={`text-xl font-semibold flex items-center justify-between ${showCurrSession?'bg-white p-2 rounded-lg ':''} cursor-pointer`}
-            onClick={() => setShowCurrSession(!showCurrSession)}>
+            <h3 className={`text-xl font-semibold flex items-center justify-between ${showCurrSession ? 'bg-white p-2 rounded-lg ' : ''} cursor-pointer`}
+              onClick={() => setShowCurrSession(!showCurrSession)}>
               Current Session
               <span className={`transform transition-transform ${showCurrSession ? 'rotate-180' : ''}`}>
                 ▼
@@ -97,32 +97,49 @@ const SessionCard = ({ semesterId, setCurrSessionId }) => {
                 </div>
 
                 {/* Class Routine Section (static demo data) */}
-                <RoutineTable sessionId={sessionData.currentSession._id}/>
+                <RoutineTable sessionId={sessionData.currentSession._id} />
               </div>
             )}
           </div>
 
           {/* Previous Session */}
-          <div
-            className="p-4 bg-gray-100 rounded-lg"
-            onClick={() => setShowPrevSession(!showPrevSession)}
-          >
-            <h3 className="mb-4 text-xl font-semibold flex items-center justify-between cursor-pointer">
+          <div className="p-4 bg-gray-100 rounded-lg">
+            <h3
+              className={`text-xl font-semibold flex items-center justify-between ${showPrevSession ? 'bg-white p-2 rounded-lg' : ''} cursor-pointer`}
+              onClick={() => setShowPrevSession(!showPrevSession)}
+            >
               Previous Session
-              <span className={`transform transition-transform ${showPrevSession ? 'rotate-180' : ''}`}>
-                ▼
-              </span>
+              <span className={`transform transition-transform ${showPrevSession ? 'rotate-180' : ''}`}>▼</span>
             </h3>
+
+            
             {showPrevSession && previousSessions && (
-              <div className="px-6 pb-4 grid grid-cols-5 gap-6 bg-gray-100">
-                {previousSessions.map((year, index) => (
-                  <div key={index} className="p-4 bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow">
-                    <h5 className="font-medium text-gray-800">{year}</h5>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-4">
+                {previousSessions.map((session, index) => (
+                  <div
+                    key={index}
+                    className="p-4 bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow cursor-pointer"
+                    onClick={() => setSelectedPrevSession(session)}
+                  >
+                    <h5 className="font-medium text-gray-800 text-center">
+                      {session.academicYear}
+                    </h5>
                   </div>
                 ))}
               </div>
             )}
+
           </div>
+
+          {selectedPrevSession && (
+            <PreviousSessionPopup
+              session={selectedPrevSession}
+              semesterId={semesterId}
+              onClose={() => setSelectedPrevSession(null)}
+            />
+          )}
+
+
         </div>
       )}
 

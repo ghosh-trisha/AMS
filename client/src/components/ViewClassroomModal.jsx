@@ -19,7 +19,7 @@ const CreateCourseModal = ({ isOpen, onClose }) => {
   const [courseId, setCourseId] = useState(null);
   const [semesterId, setSemesterId] = useState(null);
 
-  // Example base URL (replace with your actual endpoints)
+  // base url for API calls
   const baseURL = 'http://localhost:8080/api/admin';
 
   // Handler for closing the modal
@@ -38,37 +38,6 @@ const CreateCourseModal = ({ isOpen, onClose }) => {
 
     onClose();
   };
-
-  // Handler for final creation
-//   const handleCreateCourse = async () => {
-//     if (!courseName || !numSemesters || !programId || !levelId || !departmentId) {
-//       toast.error('Please fill in all required fields.');
-//       return;
-//     }
-//     try {
-//       // First, create the course
-//       const courseRes = await axios.post(`${baseURL}/courses`, {
-//         name: courseName,
-//         programId: programId
-//       });
-//       const courseId = courseRes.data.data._id;
-      
-//       console.log("courseId", courseId);
-//       console.log("numSemesters", numSemesters);
-//       // Then, create the semester entry with total number of semesters and the course id
-//       await axios.post(`${baseURL}/semesters`, {
-//         totalSemesters: numSemesters,
-//         courseId: courseId
-//       });
-      
-//       toast.success('Course created successfully!');
-//       handleClose();
-//     } catch (error) {
-//       console.error('Error creating course:', error);
-//       toast.error(error?.response?.data?.message);
-//     }
-//   };
-
   if (!isOpen) return null;
 
   return (
