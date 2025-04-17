@@ -238,7 +238,7 @@ exports.getStudentInfo = catchAsync(async (req, res, next) => {
         programName: program?.name,
         courseName: course?.name,
         semesterName: semester?.name,
-        sessionName: session?.name,
+        sessionName: session?.academicYear,
         syllabus,
         isVerified: student.isVerified,
         promoteFlag: student.promote_flag

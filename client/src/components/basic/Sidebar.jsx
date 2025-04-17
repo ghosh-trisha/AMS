@@ -51,8 +51,13 @@ const Sidebar = () => {
           {role === 'student' && (
             <>
               <li>
-                <Link to="/student/dashboard" className="block p-2 hover:bg-gray-700 rounded">
+                <Link to={`/student/dashboard/${userId}`} className="block p-2 hover:bg-gray-700 rounded">
                   Dashboard
+                </Link>
+              </li>
+              <li>
+                <Link to={`/student/routine/${userId}`} className="block p-2 hover:bg-gray-700 rounded">
+                  Routine
                 </Link>
               </li>
               <li>
@@ -61,7 +66,7 @@ const Sidebar = () => {
                 </Link>
               </li>
               <li>
-                <Link to="/student/attendance" className="block p-2 hover:bg-gray-700 rounded">
+                <Link to={`/student/attendance/${userId}`} className="block p-2 hover:bg-gray-700 rounded">
                   Attendance Report
                 </Link>
               </li>
@@ -71,8 +76,13 @@ const Sidebar = () => {
           {role === 'teacher' && (
             <>
               <li>
-                <Link to="/teacher/dashboard" className="block p-2 hover:bg-gray-700 rounded">
+                <Link to={`/teacher/dashboard/${userId}`} className="block p-2 hover:bg-gray-700 rounded">
                   Dashboard
+                </Link>
+              </li>
+              <li>
+                <Link to={`/teacher/routine/${userId}`} className="block p-2 hover:bg-gray-700 rounded">
+                  Routine
                 </Link>
               </li>
               <li>
