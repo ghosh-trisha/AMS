@@ -14,10 +14,6 @@ const Room = require('../../models/Room');
 exports.createSchedule = catchAsync(async (req, res, next) => {
   const { sessionId, subjectId, schedule } = req.body;
 
-  // console.log('Schedule data:', schedule);
-  // console.log('Session ID:', sessionId);
-  // console.log('Subject ID:', subjectId);
-
   // Validate request body
   if (!sessionId || !subjectId || !schedule || !Array.isArray(schedule)) {
     return next(new ApiError('sessionId, subjectId, and a schedule array are required', 400));
@@ -165,6 +161,15 @@ exports.getAllSchedulesBySession = catchAsync(async (req, res, next) => {
     },
     { $unwind: '$subjectCategory' },
     {
+      $lookup: {
+        from: 'rooms',
+        localField: 'scheduleDetails.roomId',
+        foreignField: '_id',
+        as: 'room'
+      }
+    },
+    { $unwind: '$room' },
+    {
       $group: {
         _id: '$scheduleId',
         id: { $first: '$scheduleId' },
@@ -174,6 +179,8 @@ exports.getAllSchedulesBySession = catchAsync(async (req, res, next) => {
         subjectName: { $first: '$subject.name' },
         subjectCode: { $first: '$subject.code' },
         subjectCategory: { $first: '$subjectCategory.name' },
+        roomName: { $first: '$room.name' },
+        buildingName: { $first: '$room.buildingName' },
         teachers: {
           $push: {
             name: '$teacherDetails.name',
@@ -201,6 +208,8 @@ exports.getAllSchedulesBySession = catchAsync(async (req, res, next) => {
             subjectName: '$subjectName',
             subjectCode: '$subjectCode',
             subjectCategory: '$subjectCategory',
+            roomName: '$roomName',
+            buildingName: '$buildingName',
             teachers: '$teachers'
 
           }

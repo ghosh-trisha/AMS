@@ -16,8 +16,6 @@ const RoutineTimeline = ({ sessionId, readOnly = false }) => {
   const [isLoading, setIsLoading] = useState(true);
 const [isDeleting, setIsDeleting] = useState(false);
 
-// console.log("sessionId --> ", sessionId)
-
 
   useEffect(() => {
     const fetchData = async () => {
@@ -118,13 +116,14 @@ const [isDeleting, setIsDeleting] = useState(false);
                 const left = (startHour - minHour) * pxPerHour;
                 const width = (endHour - startHour) * pxPerHour;
 
+
                 const tooltipContent = `
                   ${sch.subjectName} (${sch.subjectCategory})
                   Code: ${sch.subjectCode}
                   Time: ${formatTime(sch.start_time)} - ${formatTime(sch.end_time)}
                   Teachers: ${sch.teachers.map(t => t.name).join(', ')}
-                  Building: ${sch.roomId}
-                  Room: ${sch.roomId}
+                  Building: ${sch.buildingName}
+                  Room: ${sch.roomName}
                 `;
 
                 return (
