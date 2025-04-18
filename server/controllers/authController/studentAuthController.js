@@ -10,6 +10,7 @@ const Level = require('../../models/Level');
 const Program = require('../../models/Program');
 const Course = require('../../models/Course');
 const Semester = require('../../models/Semester');
+const mongoose = require('mongoose');
 
 
 const accessTokenSecret = process.env.ACCESS_TOKEN_SECRET || 'access-secret';
@@ -212,11 +213,74 @@ exports.getStudentInfo = catchAsync(async (req, res, next) => {
   jwt.verify(token, accessTokenSecret, async (err, decoded) => {
     if (err) return res.status(403).json({ message: 'Invalid or expired token' });
 
+    const student = await Student.findById(decoded.id).populate('sessionId');
+    if (!student) return next(new ApiError('Student not found', 404));
+
+    const studentMasters = await StudentMaster.find({ studentId: student._id }); 
+
+    const sessionDetails = await Promise.all(studentMasters.map(async (master) => {
+      const [department, level, program, course, semester, session, subjects] = await Promise.all([
+        Department.findById(master.departmentId),
+        Level.findById(master.levelId),
+        Program.findById(master.programId),
+        Course.findById(master.courseId),
+        Semester.findById(master.semesterId),
+        Session.findById(master.sessionId),
+        Subject.find({ syllabusId: master.syllabusId }).populate('categoryId')
+      ]);
+
+      const syllabus = subjects.map(subject => ({
+        subjectName: subject.name,
+        subjectCode: subject.code,
+        category: subject.categoryId?.name || 'Unknown'
+      }));
+
+      return {
+        sessionId: session?._id,
+        academicYear: session?.academicYear,
+        departmentName: department?.name,
+        levelName: level?.name,
+        programName: program?.name,
+        courseName: course?.name,
+        semesterName: semester?.name,
+        syllabus
+      };
+    }));
+
+    res.status(200).json({
+      status: 'success',
+      data: {
+        name: student.name,
+        email: student.email,
+        phone: student.phone,
+        rollNumber: student.rollNumber,
+        registrationNumber: student.registrationNumber,
+        isVerified: student.isVerified,
+        promoteFlag: student.promote_flag,
+        sessions: sessionDetails 
+      }
+    });
+  });
+});
+
+
+
+// get student info per session
+exports.getStudentInfoPerSession = catchAsync(async (req, res, next) => {
+  const authHeader = req.headers['authorization'];
+  const token = authHeader && authHeader.split(' ')[1];
+  const { sessionId } = req.params;   
+
+  if (!token) return res.status(401).json({ message: 'Access token required' });
+
+  jwt.verify(token, accessTokenSecret, async (err, decoded) => {
+    if (err) return res.status(403).json({ message: 'Invalid or expired token' });
+
     const student = await Student.findById(decoded.id);
     if (!student) return next(new ApiError('Student not found', 404));
 
-    const studentMaster = await StudentMaster.findOne({ studentId: student._id });
-    if (!studentMaster) return next(new ApiError('Student details not found', 404));
+    const studentMaster = await StudentMaster.findOne({ studentId: student._id, sessionId });
+    if (!studentMaster) return next(new ApiError('Student details not found from StudentMaster', 404));
 
     const [department, level, program, course, semester, session, subjects] = await Promise.all([
       Department.findById(studentMaster.departmentId),

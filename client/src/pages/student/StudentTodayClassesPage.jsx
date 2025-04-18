@@ -4,19 +4,27 @@ import { toast } from 'react-hot-toast';
 import Loader from '../../components/basic/Loader';
 import { format, parseISO } from 'date-fns';
 import { useParams } from 'react-router-dom';
+import { useSession } from '../../components/contexts/sessionContext';
+
 
 const StudentClassesPage = () => {
   const { id } = useParams();
   const [classes, setClasses] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [attendanceLoading, setAttendanceLoading] = useState({});  
+  const [attendanceLoading, setAttendanceLoading] = useState({}); 
+    const { selectedSession } = useSession();
 
   // Fetch today's classes for the student
   const fetchTodaysClasses = async () => {
     try {
       setLoading(true);
-      const res = await axios.get(`http://localhost:8080/api/student/classes/${id}`);
-      setClasses(res.data.data); 
+      const res = await axios.get(`http://localhost:8080/api/student/classes/${id}/${selectedSession}`);
+      if(res.data.data.length === 0) {
+        setClasses([]);
+      }
+      else{
+        setClasses(res.data.data);
+      }
     } catch (error) {
       toast.error(error.message);
     } finally {
@@ -65,7 +73,7 @@ const StudentClassesPage = () => {
 
   useEffect(() => {
     fetchTodaysClasses();
-  }, [id]);
+  }, [id, selectedSession]);
 
   const getStatusColor = (status) => {
     switch (status?.toLowerCase()) {

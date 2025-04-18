@@ -5,6 +5,7 @@ const Student = require('../../models/Student');
 const Schedule = require('../../models/Schedule');
 const ScheduleTeacherMapper = require('../../models/ScheduleTeacherMapper');
 const Attendance = require('../../models/Attendance');
+const Sesssion = require('../../models/Session')
 
 
 // Controller function to get all students
@@ -28,15 +29,14 @@ exports.getAllStudents = catchAsync(async (req, res, next) => {
 
 // get today's classes as a student
 exports.getTodaysClassesAsStudent = catchAsync(async (req, res, next) => {
-    
-    const { studentId } = req.params;
-    const { givenSessionId } = req.body;
-    
+
+    const { studentId, givenSessionId } = req.params;
+
     const student = await Student.findById(studentId);
     if (!student) {
         return next(new ApiError('Student not found', 404));
     }
-    
+
     // Determine today's weekday in long format (e.g., "Monday")
     const today = new Date();
     const weekday = today.toLocaleString('en-US', { weekday: 'long' });
@@ -44,8 +44,8 @@ exports.getTodaysClassesAsStudent = catchAsync(async (req, res, next) => {
     const startOfDay = new Date(today.setHours(0, 0, 0, 0));
     const endOfDay = new Date(today.setHours(23, 59, 59, 999));
 
-    const sessionIdToUse = givenSessionId 
-        ? new mongoose.Types.ObjectId(givenSessionId) 
+    const sessionIdToUse = givenSessionId
+        ? new mongoose.Types.ObjectId(givenSessionId)
         : student.sessionId[student.sessionId.length - 1];
     // const schedules = await Schedule.aggregate([
     //     {
@@ -127,7 +127,7 @@ exports.getTodaysClassesAsStudent = catchAsync(async (req, res, next) => {
 
 
     // Aggregate starting from ScheduleTeacherMapper instead of Schedule
-    
+
     const schedules = await ScheduleTeacherMapper.aggregate([
         {
             $lookup: {
@@ -226,5 +226,28 @@ exports.getTodaysClassesAsStudent = catchAsync(async (req, res, next) => {
         status: 'success',
         results: schedules.length,
         data: schedules
+    });
+});
+
+
+// get all current sessions of a student
+exports.getAllCurrentSessionsOfAStudent = catchAsync(async (req, res, next) => {
+    const { studentId } = req.params;
+
+    const student = await Student.findById(studentId).populate({
+        path: 'sessionId',
+        select: 'academicYear syllabusId semesterId'  
+      });
+
+    if (!student) {
+        return next(new ApiError('Student not found', 404));
+    }
+
+    res.status(200).json({
+        status: 'success',
+        totalCurrentSessions: student.sessionId.length,
+        data: {
+            currentSessions: student.sessionId
+        }
     });
 });

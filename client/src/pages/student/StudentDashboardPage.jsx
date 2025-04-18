@@ -3,16 +3,21 @@ import axios from 'axios';
 import Cookies from 'js-cookie';
 import { GraduationCap, Mail, Phone, User, FileText } from 'lucide-react';
 import { AiOutlineIdcard } from 'react-icons/ai';   
+import { useSession } from '../../components/contexts/sessionContext';
+
 
 const StudentDashboardPage = () => {
   const [studentData, setStudentData] = useState(null);
   const [loading, setLoading] = useState(true);
+  const { selectedSession } = useSession();
+
 
   useEffect(() => {
     const fetchStudentInfo = async () => {
+      setLoading(true);
       try {
         const token = Cookies.get('accessToken');
-        const response = await axios.get("http://localhost:8080/api/auth/student/getInfo", {
+        const response = await axios.get(`http://localhost:8080/api/auth/student/getInfo/${selectedSession}`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -26,7 +31,7 @@ const StudentDashboardPage = () => {
     };
 
     fetchStudentInfo();
-  }, []);
+  }, [selectedSession]);
 
   if (loading) {
     return (

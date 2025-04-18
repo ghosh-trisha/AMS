@@ -220,7 +220,7 @@ const CreateScheduleModal = ({ currSessionId, onClose, onScheduleCreated }) => {
 
         ]
       }
-      console.log(data)
+      // console.log(data)
       const res = await axios.post(`http://localhost:8080/api/admin/schedule`, data, {
         headers: {
           'Content-Type': 'application/json'

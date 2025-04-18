@@ -14,6 +14,8 @@ router.get('/student/logout', studentAuthController.logoutStudent);
 router.get('/student/generateNewAccessToken', studentAuthController.generateNewAccessTokenStudent);
 // get student info
 router.get('/student/getInfo', studentAuthController.getStudentInfo);
+// get student info per session
+router.get('/student/getInfo/:sessionId', studentAuthController.getStudentInfoPerSession);
 
 
 // teacher registration
