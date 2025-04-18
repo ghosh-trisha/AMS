@@ -9,15 +9,14 @@ const StudentClassesPage = () => {
   const { id } = useParams();
   const [classes, setClasses] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [attendanceLoading, setAttendanceLoading] = useState({}); // Track loading state per class
+  const [attendanceLoading, setAttendanceLoading] = useState({});  
 
   // Fetch today's classes for the student
   const fetchTodaysClasses = async () => {
     try {
       setLoading(true);
       const res = await axios.get(`http://localhost:8080/api/student/classes/${id}`);
-      setClasses(res.data.data);
-      // console.log(res.data.data);
+      setClasses(res.data.data); 
     } catch (error) {
       toast.error(error.message);
     } finally {
@@ -29,21 +28,14 @@ const StudentClassesPage = () => {
   const handleMarkAttendance = async (index) => {
     try {
       setAttendanceLoading((prev) => ({ ...prev, [index]: true }));
-      const cls = classes[index];
-      // console.log(cls);
-
-      // 🆕 Call student/attendance API
-      // console.log("sessionId", cls.sessionId);
-      // console.log("scheduleId", cls.scheduleId);
-      // console.log("subjectId", cls.subjectId);
+      const cls = classes[index]; 
 
       const res = await axios.post('http://localhost:8080/api/student/attendance', {
         studentId: id,
         sessionId: cls.sessionId,
         scheduleId: cls.scheduleId,
         subjectId: cls.subjectId
-      });
-      // console.log(res.data.data);
+      }); 
 
 
       toast.success('Attendance marked successfully!');
@@ -67,7 +59,7 @@ const StudentClassesPage = () => {
     try {
       return format(parseISO(time), 'h:mm a');
     } catch {
-      return time; // Fallback for non-ISO formats
+      return time;  
     }
   };
 

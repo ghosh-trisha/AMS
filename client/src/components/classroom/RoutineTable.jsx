@@ -9,7 +9,7 @@ import HashLoader from "react-spinners/HashLoader";
 const weekdays = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 const timelineWidth = 800;
 
-const RoutineTimeline = ({ sessionId }) => {
+const RoutineTimeline = ({ sessionId, readOnly = false }) => {
   const [routineData, setRoutineData] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const [selectedScheduleId, setSelectedScheduleId] = useState(null);
@@ -138,12 +138,14 @@ const [isDeleting, setIsDeleting] = useState(false);
                     <div className="font-bold">{sch.subjectName} ({sch.subjectCategory})</div>
                     <div className="text-xs">{sch.subjectCode}</div>
 
+                    {!readOnly && (
                     <button
                       onClick={() => confirmDelete(sch.id)}
                       className="absolute bottom-1 right-1 text-white rounded hover:opacity-70 cursor-pointer"
                     >
                       <FaTrash size={14} color='red' />
                     </button>
+                    )}
 
                     <Tooltip
                       id={`tooltip-${day}-${idx}`}
@@ -161,7 +163,7 @@ const [isDeleting, setIsDeleting] = useState(false);
       </div>
     }
       {/* Confirmation Modal */}
-      {showModal && (
+      {showModal && !readOnly && (
         <div className="fixed inset-0 bg-transparent backdrop-blur-[1px] bg-opacity-40 flex items-center justify-center z-50">
           <div className="bg-white p-6 rounded-lg shadow-lg w-[90%] max-w-md space-y-4">
             <h2 className="text-lg font-semibold text-gray-800">Confirm Deletion</h2>

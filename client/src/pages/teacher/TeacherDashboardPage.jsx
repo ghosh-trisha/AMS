@@ -1,11 +1,91 @@
-import React from 'react'
+// import React from 'react'
 
-function StudentDashboardPage() {
+// function TeacherDashboardPage() {
+//   return (
+//     <div>
+//       Teacher dashboard page
+//     </div>
+//   )
+// }
+
+// export default TeacherDashboardPage
+
+
+
+import React, { useEffect, useState } from 'react';
+import axios from 'axios';
+import Cookies from 'js-cookie';
+import { Mail, Phone, User } from 'lucide-react';
+import { FaChalkboardTeacher } from 'react-icons/fa';
+
+const TeacherDashboardPage = () => {
+  const [teacherData, setTeacherData] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchTeacherInfo = async () => {
+      try {
+        const token = Cookies.get('accessToken');
+        const response = await axios.get("http://localhost:8080/api/auth/teacher/getInfo", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        setTeacherData(response.data.data);
+      } catch (error) {
+        console.error('Error fetching teacher info:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchTeacherInfo();
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="p-6 grid gap-4 animate-pulse">
+        <div className="h-10 bg-gray-200 rounded w-2/3"></div>
+        <div className="h-6 bg-gray-200 rounded w-1/2"></div>
+        <div className="h-32 bg-gray-200 rounded w-full"></div>
+      </div>
+    );
+  }
+
+  if (!teacherData) {
+    return <div className="p-6 text-center text-red-600 font-semibold">No teacher data available.</div>;
+  }
+
   return (
-    <div>
-      Teacher dashboard page
-    </div>
-  )
-}
+    <div className="p-6 max-w-6xl mx-auto space-y-8">
+      {/* Header */}
+      <div className="text-center space-y-2">
+        <h1 className="text-4xl font-extrabold text-indigo-800 drop-shadow-md">
+          Welcome, {teacherData.name}
+        </h1>
+        <p className="text-gray-500">Have a great teaching day!</p>
+      </div>
 
-export default StudentDashboardPage
+      {/* Personal Info */}
+      <div className="bg-white shadow-xl rounded-2xl border-t-4 border-indigo-400 p-6">
+        <h2 className="text-2xl font-bold text-indigo-700 flex items-center gap-2 mb-4">
+          <User className="h-6 w-6" /> Personal Info
+        </h2>
+        <div className="grid sm:grid-cols-2 gap-4 text-gray-700">
+          <p><span className="font-semibold"><Mail className="inline-block mr-2" />Email:</span> {teacherData.email}</p>
+          <p><span className="font-semibold"><Phone className="inline-block mr-2" />Phone:</span> {teacherData.phone}</p>
+        </div>
+      </div>
+
+      {/* Teaching Info (Optional future section) */}
+      <div className="bg-white shadow-xl rounded-2xl border-t-4 border-amber-400 p-6">
+        <h2 className="text-2xl font-bold text-amber-700 flex items-center gap-2 mb-4">
+          <FaChalkboardTeacher className="h-6 w-6" /> Teaching Info
+        </h2>
+        <p className="text-gray-500">Teaching details will appear here in future updates like the classes which are taught by him.</p>
+      </div>
+    </div>
+  );
+};
+
+export default TeacherDashboardPage;

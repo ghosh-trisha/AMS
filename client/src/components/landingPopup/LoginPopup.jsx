@@ -4,6 +4,7 @@ import axios from 'axios';
 import toast from 'react-hot-toast';
 import Cookies from "js-cookie";
 import { useRole } from '../contexts/roleContext'
+import { useSession } from '../contexts/sessionContext';
 import { AiFillEye, AiFillEyeInvisible } from 'react-icons/ai';
 
 
@@ -15,6 +16,8 @@ const LoginPopup = ({ setShowPopup }) => {
   const [passwordVissible, setPasswordVisible] = useState(false);
 
   const roleContext=useRole();
+  const sessionContext=useSession();
+
   const decodeToken = (token) => {
     try {
       const payload = JSON.parse(atob(token.split('.')[1])); // Decode the payload
@@ -51,6 +54,15 @@ const LoginPopup = ({ setShowPopup }) => {
       Cookies.set("role", decodedAccess.role, { expires: new Date(decodedRefresh.exp) });
      
       roleContext.setRole(decodedAccess.role);
+
+      if (role === "student") {
+        const currentSessions = response.data.data.student.sessionId;
+        if (Array.isArray(currentSessions) && currentSessions.length > 0) {
+          const lastSession = currentSessions[currentSessions.length - 1];
+          Cookies.set("selectedSession", lastSession._id);
+          sessionContext.setSelectedSession(lastSession._id);
+        }
+      }
 
       toast.success('Login successful!');
       setShowPopup(false);

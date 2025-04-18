@@ -47,8 +47,7 @@ const StudentDashboardPage = () => {
       {/* Header */}
       <div className="text-center space-y-2">
         <h1 className="text-4xl font-extrabold text-indigo-800 drop-shadow-md">Welcome, {studentData.name}</h1>
-        <p className="text-lg text-gray-500">Here’s your academic dashboard</p>
-        <div className="h-1 w-24 bg-indigo-500 mx-auto rounded-full"></div>
+        <p className="text-gray-500">Have a great learning day!</p>
       </div>
 
       {/* Personal Info */}

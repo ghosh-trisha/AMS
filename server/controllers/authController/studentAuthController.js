@@ -128,7 +128,12 @@ exports.loginStudent = catchAsync(async (req, res, next) => {
       { rollNumber: identifier },
       { registrationNumber: identifier }
     ]
-  });
+  }).populate('sessionId').select('-createdAt -updatedAt -__v -promote_flag')
+
+  const minimalSessions = student.sessionId.map(session => ({
+    _id: session._id,
+    academicYear: session.academicYear
+  }));
   
   if (!student) {
     return next(new ApiError('Invalid credentials', 401));
@@ -145,8 +150,12 @@ exports.loginStudent = catchAsync(async (req, res, next) => {
   res.status(200).json({
     status: 'success',
     message: 'Login successful',
-    student,
     data: {
+      student: {
+        ...student.toObject(),
+        totalCurrentSessions: student.sessionId.length,
+        sessionId: minimalSessions
+      },
       accessToken,
       refreshToken
     }

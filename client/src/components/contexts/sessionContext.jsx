@@ -13,5 +13,5 @@ export const SessionProvider = ({ children }) => {
 };
 
 export const useSession = () => {
-    useContext(SessionContext)
+  return useContext(SessionContext)
 }

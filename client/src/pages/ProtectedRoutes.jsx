@@ -10,12 +10,14 @@ import StudentRoutes from "../routes/StudentRoutes";
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import LandingPage from "./LandingPage";
 import { useRole } from "../components/contexts/roleContext";
+import { useSession } from "../components/contexts/sessionContext";
 
 const ProtectedRoutes = () => {
   const [token, setToken] = useState();
   const [error, setError] = useState(false);
   const [loading, setLoading] = useState(false);
   const { role, setRole } = useRole();
+  const { selectedSession, setSelectedSession } = useSession();
 
   useEffect(() => {
 
@@ -23,6 +25,8 @@ const ProtectedRoutes = () => {
 
     // setRole('admin')
     setRole(Cookies.get("role"))
+
+    setSelectedSession(Cookies.get("selectedSession"))
   }, []);
 
   if (loading) {
