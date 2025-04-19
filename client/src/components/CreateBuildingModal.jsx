@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import { toast } from 'react-hot-toast';
+import { motion } from 'framer-motion'; // Import framer-motion
 
 const CreateBuildingModal = ({ isOpen, onClose }) => {
   const [buildingName, setBuildingName] = useState('');
@@ -33,8 +34,20 @@ const CreateBuildingModal = ({ isOpen, onClose }) => {
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 backdrop-blur-[1px] flex items-center justify-center p-4 z-50">
-      <div className="bg-white rounded-xl p-6 w-full max-w-lg shadow-2xl">
+    <motion.div
+      initial={{ opacity: 0, y: -50 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: 50 }}
+      transition={{ duration: 0.3 }}
+      className="fixed inset-0 backdrop-blur-[1px] flex items-center justify-center p-4 z-50"
+    >
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        transition={{ duration: 0.3 }}
+        className="bg-white rounded-xl p-6 w-full max-w-lg shadow-2xl"
+      >
         <h2 className="text-2xl font-bold mb-6 text-gray-800">Create New Building</h2>
 
         <div className="space-y-4">
@@ -66,8 +79,8 @@ const CreateBuildingModal = ({ isOpen, onClose }) => {
             Create Building
           </button>
         </div>
-      </div>
-    </div>
+      </motion.div>
+    </motion.div>
   );
 };
 

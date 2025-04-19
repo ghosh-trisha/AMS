@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useParams, useNavigate } from 'react-router-dom';
 import { CalendarDays, Clock, BookOpen } from 'lucide-react';
-
+import { motion } from 'framer-motion'; 
 
 const TodaysClassesForTeacher = () => {
   const { teacherId } = useParams();
@@ -20,7 +20,6 @@ const TodaysClassesForTeacher = () => {
     const fetchClasses = async () => {
       try {
         const res = await axios.get(`http://localhost:8080/api/teacher/classes/${teacherId}`);
-        // console.log('Fetched classes:', res.data.data);
         let classesData = res.data.data || [];
         classesData.sort((a, b) => toMinutes(a.startTime) - toMinutes(b.startTime));
         setClasses(classesData);
@@ -35,25 +34,73 @@ const TodaysClassesForTeacher = () => {
   }, [teacherId]);
 
   const handleCardClick = (cls) => {
-    // console.log('Class clicked:', cls.classId);
     navigate(`/teacher/requests/${cls.classId}`);
   };
 
-  if (loading) return <div className="text-center py-6">Loading classes...</div>;
+  if (loading) {
+    return (
+      <div className="p-6">
+        <motion.h1
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+          className="text-3xl font-bold mb-6 text-center text-blue-700"
+        >
+          📚 Today's Classes
+        </motion.h1>
+        <div className="grid gap-6">
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.4 }}
+            className="h-10 bg-gray-200 rounded w-2/3 mx-auto"
+          />
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.4, delay: 0.2 }}
+            className="h-6 bg-gray-200 rounded w-1/2 mx-auto"
+          />
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.4, delay: 0.4 }}
+            className="h-32 bg-gray-200 rounded w-full mx-auto"
+          />
+        </div>
+      </div>
+    );
+  }
+
   if (error) return <div className="text-center py-6 text-red-500">Error: {error}</div>;
 
   return (
     <div className="p-6">
-      <h1 className="text-3xl font-bold mb-6 text-center text-blue-700">Today's Classes</h1>
+      <motion.h1
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+        className="text-3xl font-bold mb-6 text-center text-blue-700"
+      >
+        📚 Today's Classes
+      </motion.h1>
       {classes.length === 0 ? (
         <div className="text-center text-gray-600">No classes scheduled for today.</div>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.5 }}
+          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"
+        >
           {classes.map((cls, index) => (
-            <div
+            <motion.div
               key={index}
               onClick={() => handleCardClick(cls)}
               className="cursor-pointer bg-white rounded-2xl shadow-lg p-5 transition-transform hover:scale-105 border hover:border-blue-500"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.4, delay: index * 0.1 }}
             >
               <div className="flex items-center justify-between mb-3">
                 <div className="flex items-center gap-2 text-blue-600 font-semibold">
@@ -78,9 +125,9 @@ const TodaysClassesForTeacher = () => {
                 <p><span className="font-medium">Level:</span> {cls.levelName}</p>
                 <p><span className="font-medium">Department:</span> {cls.departmentName}</p>
               </div>
-            </div>
+            </motion.div>
           ))}
-        </div>
+        </motion.div>
       )}
     </div>
   );

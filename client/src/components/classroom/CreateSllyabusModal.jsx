@@ -209,3 +209,6 @@ const customSelectStyles = {
 };
 
 export default CreateSyllabusModal;
+
+
+

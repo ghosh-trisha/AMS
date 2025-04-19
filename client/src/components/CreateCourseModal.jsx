@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import DropdownComponent from '../utils/Dropdown'; // <-- Import the child component
 import { toast } from 'react-hot-toast';
 import axios from 'axios';
+import { motion } from 'framer-motion'; // Import framer-motion
 
 const CreateCourseModal = ({ isOpen, onClose }) => {
   const [departmentEnabled, setDepartmentEnabled] = useState(true);  // 1st dropdown enabled by default
@@ -65,8 +66,20 @@ const CreateCourseModal = ({ isOpen, onClose }) => {
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 backdrop-blur-[1px] flex items-center justify-center p-4 z-50">
-      <div className="bg-white rounded-xl p-6 w-full max-w-4xl shadow-2xl max-h-[90vh] flex flex-col">
+    <motion.div
+      initial={{ opacity: 0, y: -50 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: 50 }}
+      transition={{ duration: 0.3 }}
+      className="fixed inset-0 backdrop-blur-[1px] flex items-center justify-center p-4 z-50"
+    >
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        transition={{ duration: 0.3 }}
+        className="bg-white rounded-xl p-6 w-full max-w-4xl shadow-2xl max-h-[90vh] flex flex-col"
+      >
         <h2 className="text-2xl font-bold mb-6 text-gray-800">Create New Course</h2>
 
         {/* SCROLLABLE CONTENT */}
@@ -178,8 +191,8 @@ const CreateCourseModal = ({ isOpen, onClose }) => {
             Create Course
           </button>
         </div>
-      </div>
-    </div>
+      </motion.div>
+    </motion.div>
   );
 };
 

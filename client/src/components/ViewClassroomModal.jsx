@@ -1,12 +1,13 @@
+
 import React, { useState } from 'react';
 import DropdownComponent from '../utils/Dropdown'; // <-- Import the child component
 import { toast } from 'react-hot-toast';
 import axios from 'axios';
 import { Navigate, useNavigate } from 'react-router-dom';
-
+import { motion } from 'framer-motion'; // Import framer-motion
 
 const CreateCourseModal = ({ isOpen, onClose }) => {
-  const navigate=useNavigate()
+  const navigate = useNavigate();
   const [departmentEnabled, setDepartmentEnabled] = useState(true);  // 1st dropdown enabled by default
   const [levelEnabled, setLevelEnabled] = useState(false);        // 2nd dropdown initially disabled
   const [programEnabled, setProgramEnabled] = useState(false);    // 3rd dropdown initially disabled
@@ -38,11 +39,24 @@ const CreateCourseModal = ({ isOpen, onClose }) => {
 
     onClose();
   };
+
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 backdrop-blur-[1px] flex items-center justify-center p-4 z-50">
-      <div className="bg-white rounded-xl p-6 w-full max-w-4xl shadow-2xl max-h-[90vh] flex flex-col">
+    <motion.div
+      initial={{ opacity: 0, y: -50 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: 50 }}
+      transition={{ duration: 0.3 }}
+      className="fixed inset-0 backdrop-blur-[1px] flex items-center justify-center p-4 z-50"
+    >
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        transition={{ duration: 0.3 }}
+        className="bg-white rounded-xl p-6 w-full max-w-4xl shadow-2xl max-h-[90vh] flex flex-col"
+      >
         <h2 className="text-2xl font-bold mb-6 text-gray-800">View Course</h2>
 
         {/* SCROLLABLE CONTENT */}
@@ -128,8 +142,6 @@ const CreateCourseModal = ({ isOpen, onClose }) => {
                 isAddOther={false}
               />
             </div>
-
-
           </div>
         </div>
 
@@ -143,15 +155,15 @@ const CreateCourseModal = ({ isOpen, onClose }) => {
           </button>
           <button
             onClick={() => {
-                navigate(`/admin/class/${semesterId}`)
-              }}
+              navigate(`/admin/class/${semesterId}`);
+            }}
             className="px-4 py-2 bg-green-500 text-white rounded-md hover:bg-green-600 cursor-pointer"
           >
             View Class
           </button>
         </div>
-      </div>
-    </div>
+      </motion.div>
+    </motion.div>
   );
 };
 

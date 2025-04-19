@@ -1,5 +1,5 @@
-
 import React, { useEffect, useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import Loader from "../basic/Loader";
 import axios from "axios";
 
@@ -28,9 +28,8 @@ export default function SyllabusesCard({ semesterId }) {
     return <Loader loading={loading} />;
   }
 
-  // Group syllabuses by name instead of year
+  // Group syllabuses by name
   const groupedSyllabuses = syllabuses.reduce((groups, syllabus) => {
-    // Previously: const year = syllabus.year || "Unknown Year";
     const name = syllabus.name || "Unknown Year";
     if (!groups[name]) {
       groups[name] = [];
@@ -40,7 +39,12 @@ export default function SyllabusesCard({ semesterId }) {
   }, {});
 
   return (
-    <div className="bg-white rounded-xl shadow-md overflow-hidden">
+    <motion.div
+      initial={{ opacity: 0, y: 30 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5 }}
+      className="bg-white rounded-xl shadow-md overflow-hidden"
+    >
       {/* Toggle Header */}
       <button
         onClick={() => setShowSyllabuses(!showSyllabuses)}
@@ -48,67 +52,97 @@ export default function SyllabusesCard({ semesterId }) {
       >
         <h2 className="text-xl font-semibold flex items-center justify-between cursor-pointer">
           Syllabuses ({syllabuses.length})
-          <span
-            className={`transform transition-transform ${
-              showSyllabuses ? "rotate-180" : ""
-            }`}
+          <motion.span
+            animate={{ rotate: showSyllabuses ? 180 : 0 }}
+            transition={{ duration: 0.3 }}
           >
             ▼
-          </span>
+          </motion.span>
         </h2>
       </button>
 
-      {/* Content (only if showSyllabuses is true) */}
-      {showSyllabuses &&
-        Object.keys(groupedSyllabuses).map((name) => {
-          const currentNameSyllabuses = groupedSyllabuses[name];
+      {/* Content (animated expand/collapse) */}
+      <AnimatePresence>
+        {showSyllabuses && (
+          <motion.div
+            initial="collapsed"
+            animate="open"
+            exit="collapsed"
+            variants={{
+              open: { opacity: 1, height: "auto" },
+              collapsed: { opacity: 0, height: 0 }
+            }}
+            transition={{ duration: 0.4, ease: "easeInOut" }}
+            className="overflow-hidden"
+          >
+            {Object.keys(groupedSyllabuses).map((name) => {
+              const currentNameSyllabuses = groupedSyllabuses[name];
 
-          return (
-            <div key={name}>
-              {/* Name Heading (replaces Year Heading) */}
-              <h1 className="px-6 text-xl font-semibold mt-2">{`Year ${name}`}</h1>
+              return (
+                <motion.div
+                  key={name}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.4 }}
+                >
+                  <h1 className="px-6 text-xl font-semibold mt-4">{`Year ${name}`}</h1>
 
-              {/* Subjects Grid */}
-              <div className="px-6 pb-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {currentNameSyllabuses.length > 0 ? (
-                  currentNameSyllabuses.map((syllabus) => {
-                    // If multiple subjects exist in this syllabus, map them individually
-                    if (syllabus.subjects && syllabus.subjects.length > 0) {
-                      return syllabus.subjects.map((subject) => (
-                        <div
-                          key={subject._id}
-                          className="group flex items-center justify-between p-4 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
-                        >
-                           <div>
-                            <h3 className="font-medium">{subject.name}</h3>
-                            <p className="text-xs text-gray-500">{subject?.categoryId?.name || "No Category"}</p>
-                          </div>
-                          <p className="text-md text-gray-600 font-bold">
-                            {subject.code.toUpperCase()}
-                          </p>
+                  <motion.div
+                    layout
+                    className="px-6 pb-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+                  >
+                    <AnimatePresence>
+                      {currentNameSyllabuses.length > 0 ? (
+                        currentNameSyllabuses.flatMap((syllabus) => {
+                          if (syllabus.subjects && syllabus.subjects.length > 0) {
+                            return syllabus.subjects.map((subject) => (
+                              <motion.div
+                                key={subject._id}
+                                initial={{ opacity: 0, scale: 0.9 }}
+                                animate={{ opacity: 1, scale: 1 }}
+                                exit={{ opacity: 0, scale: 0.9 }}
+                                transition={{ duration: 0.3 }}
+                                className="group flex items-center justify-between p-4 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
+                              >
+                                <div>
+                                  <h3 className="font-medium">{subject.name}</h3>
+                                  <p className="text-xs text-gray-500">
+                                    {subject?.categoryId?.name || "No Category"}
+                                  </p>
+                                </div>
+                                <p className="text-md text-gray-600 font-bold">
+                                  {subject.code.toUpperCase()}
+                                </p>
+                              </motion.div>
+                            ));
+                          } else {
+                            return (
+                              <motion.div
+                                key={syllabus._id}
+                                initial={{ opacity: 0, scale: 0.9 }}
+                                animate={{ opacity: 1, scale: 1 }}
+                                exit={{ opacity: 0, scale: 0.9 }}
+                                transition={{ duration: 0.3 }}
+                                className="group flex items-center justify-between p-4 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
+                              >
+                                <h3 className="font-medium">{syllabus.name}</h3>
+                              </motion.div>
+                            );
+                          }
+                        })
+                      ) : (
+                        <div className="text-center py-6 text-gray-500 col-span-full">
+                          No syllabuses available for this name
                         </div>
-                      ));
-                    } else {
-                      // If no subjects, display the syllabus name as a single item
-                      return (
-                        <div
-                          key={syllabus._id}
-                          className="group flex items-center justify-between p-4 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
-                        >
-                          <h3 className="font-medium">{syllabus.name}</h3>
-                        </div>
-                      );
-                    }
-                  })
-                ) : (
-                  <div className="text-center py-6 text-gray-500 col-span-full">
-                    No syllabuses available for this name
-                  </div>
-                )}
-              </div>
-            </div>
-          );
-        })}
-    </div>
+                      )}
+                    </AnimatePresence>
+                  </motion.div>
+                </motion.div>
+              );
+            })}
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </motion.div>
   );
 }

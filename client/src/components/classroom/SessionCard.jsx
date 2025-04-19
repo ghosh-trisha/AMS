@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import RoutineTable from "./RoutineTable"
+import RoutineTable from "./RoutineTable";
 import PreviousSessionPopup from "./PreviousSessionPopup";
+import { motion, AnimatePresence } from "framer-motion";
 
 const SessionCard = ({ semesterId, setCurrSessionId }) => {
   const [showRoutine, setShowRoutine] = useState(false);
@@ -10,7 +11,6 @@ const SessionCard = ({ semesterId, setCurrSessionId }) => {
   const [sessionData, setSessionData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-
   const [selectedPrevSession, setSelectedPrevSession] = useState(null);
 
   useEffect(() => {
@@ -18,7 +18,7 @@ const SessionCard = ({ semesterId, setCurrSessionId }) => {
       try {
         const res = await axios.get(`http://localhost:8080/api/admin/sessions/${semesterId}`);
         setSessionData(res.data.data);
-        setCurrSessionId(res.data.data.currentSession._id)
+        setCurrSessionId(res.data.data.currentSession._id);
       } catch (err) {
         setError(err.response?.data?.message || "Something went wrong");
       } finally {
@@ -30,120 +30,173 @@ const SessionCard = ({ semesterId, setCurrSessionId }) => {
   }, [semesterId]);
 
   if (loading) {
-    return <div>Loading sessions...</div>;
+    return (
+      <div className="p-6 grid gap-4 animate-pulse">
+        <div className="h-10 bg-gray-200 rounded w-2/3"></div>
+        <div className="h-6 bg-gray-200 rounded w-1/2"></div>
+        <div className="h-32 bg-gray-200 rounded w-full"></div>
+      </div>
+    );
   }
 
   if (error) {
-    return <div> {error}</div>;
+    return <div>{error}</div>;
   }
 
   const { currentSession, previousSessions } = sessionData || {};
 
   return (
-    <div className="bg-white rounded-xl shadow-md overflow-hidden mt-4">
+    <motion.div
+      initial={{ opacity: 0, y: 30 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5 }}
+      className="bg-white rounded-xl shadow-md overflow-hidden mt-4"
+    >
+      {/* Toggle Main Routine */}
       <button
         onClick={() => setShowRoutine(!showRoutine)}
         className="w-full px-6 py-4 text-left hover:bg-gray-50 transition-colors"
       >
         <h2 className="text-xl font-semibold flex items-center justify-between cursor-pointer">
           Sessions
-          <span className={`transform transition-transform ${showRoutine ? 'rotate-180' : ''}`}>
+          <motion.span
+            animate={{ rotate: showRoutine ? 180 : 0 }}
+            transition={{ duration: 0.3 }}
+          >
             ▼
-          </span>
+          </motion.span>
         </h2>
       </button>
 
-      {showRoutine && (
-        <div className="px-6 pb-4 grid grid-cols-1 gap-6 text-left">
-          {/* Current Session */}
-          <div
-            className="p-4 bg-gray-100 rounded-lg"
-
+      <AnimatePresence>
+        {showRoutine && (
+          <motion.div
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: "auto" }}
+            exit={{ opacity: 0, height: 0 }}
+            transition={{ duration: 0.4 }}
+            className="px-6 pb-4 grid grid-cols-1 gap-6 text-left overflow-hidden"
           >
-            <h3 className={`text-xl font-semibold flex items-center justify-between ${showCurrSession ? 'bg-white p-2 rounded-lg ' : ''} cursor-pointer`}
-              onClick={() => setShowCurrSession(!showCurrSession)}>
-              Current Session
-              <span className={`transform transition-transform ${showCurrSession ? 'rotate-180' : ''}`}>
-                ▼
-              </span>
-            </h3>
+            {/* Current Session */}
+            <motion.div layout className="p-4 bg-gray-100 rounded-lg">
+              <h3
+                className={`text-xl font-semibold flex items-center justify-between ${showCurrSession ? 'bg-white p-2 rounded-lg' : ''} cursor-pointer`}
+                onClick={() => setShowCurrSession(!showCurrSession)}
+              >
+                Current Session
+                <motion.span
+                  animate={{ rotate: showCurrSession ? 180 : 0 }}
+                  transition={{ duration: 0.3 }}
+                >
+                  ▼
+                </motion.span>
+              </h3>
 
-            {showCurrSession && currentSession && (
-              <div className="mt-4 space-y-6">
-                {/* Academic Year */}
-                <h4 className="text-lg font-semibold mb-4">Academic Year: {currentSession.academicYear}</h4>
-
-                {/* Subjects Display */}
-                <div>
-                  <h4 className="text-lg font-semibold mb-4">Subjects</h4>
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {currentSession?.subjects?.length > 0 ? (
-                      currentSession.subjects.map((subject) => (
-                        <div
-                          key={subject._id}
-                          className="group flex items-center justify-between p-4 bg-white rounded-lg hover:bg-gray-200 transition-colors"
-                        >
-                          <div>
-                            <h3 className="font-medium">{subject.name}</h3>
-                            <p className="text-xs text-gray-500">{subject?.categoryId?.name || "No Category"}</p>
-                          </div>
-                          <p className="text-md text-gray-600 font-bold">{subject.code.toUpperCase()}</p>
-                        </div>
-                      ))
-                    ) : (
-                      <div className="text-center py-6 text-gray-500 col-span-full">No subjects available</div>
-                    )}
-                  </div>
-                </div>
-
-                {/* Class Routine Section (static demo data) */}
-                <RoutineTable sessionId={sessionData.currentSession._id} />
-              </div>
-            )}
-          </div>
-
-          {/* Previous Session */}
-          <div className="p-4 bg-gray-100 rounded-lg">
-            <h3
-              className={`text-xl font-semibold flex items-center justify-between ${showPrevSession ? 'bg-white p-2 rounded-lg' : ''} cursor-pointer`}
-              onClick={() => setShowPrevSession(!showPrevSession)}
-            >
-              Previous Session
-              <span className={`transform transition-transform ${showPrevSession ? 'rotate-180' : ''}`}>▼</span>
-            </h3>
-
-            
-            {showPrevSession && previousSessions && (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-4">
-                {previousSessions.map((session, index) => (
-                  <div
-                    key={index}
-                    className="p-4 bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow cursor-pointer"
-                    onClick={() => setSelectedPrevSession(session)}
+              <AnimatePresence>
+                {showCurrSession && currentSession && (
+                  <motion.div
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: "auto" }}
+                    exit={{ opacity: 0, height: 0 }}
+                    transition={{ duration: 0.4 }}
+                    className="mt-4 space-y-6 overflow-hidden"
                   >
-                    <h5 className="font-medium text-gray-800 text-center">
-                      {session.academicYear}
-                    </h5>
-                  </div>
-                ))}
-              </div>
+                    <h4 className="text-lg font-semibold mb-4">Academic Year: {currentSession.academicYear}</h4>
+
+                    {/* Subjects Display */}
+                    <div>
+                      <h4 className="text-lg font-semibold mb-4">Subjects</h4>
+                      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        <AnimatePresence>
+                          {currentSession?.subjects?.length > 0 ? (
+                            currentSession.subjects.map((subject) => (
+                              <motion.div
+                                key={subject._id}
+                                initial={{ opacity: 0, scale: 0.9 }}
+                                animate={{ opacity: 1, scale: 1 }}
+                                exit={{ opacity: 0, scale: 0.9 }}
+                                transition={{ duration: 0.3 }}
+                                className="group flex items-center justify-between p-4 bg-white rounded-lg hover:bg-gray-200 transition-colors"
+                              >
+                                <div>
+                                  <h3 className="font-medium">{subject.name}</h3>
+                                  <p className="text-xs text-gray-500">{subject?.categoryId?.name || "No Category"}</p>
+                                </div>
+                                <p className="text-md text-gray-600 font-bold">
+                                  {subject.code.toUpperCase()}
+                                </p>
+                              </motion.div>
+                            ))
+                          ) : (
+                            <div className="text-center py-6 text-gray-500 col-span-full">
+                              No subjects available
+                            </div>
+                          )}
+                        </AnimatePresence>
+                      </div>
+                    </div>
+
+                    <RoutineTable sessionId={sessionData.currentSession._id} />
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </motion.div>
+
+            {/* Previous Sessions */}
+            <motion.div layout className="p-4 bg-gray-100 rounded-lg">
+              <h3
+                className={`text-xl font-semibold flex items-center justify-between ${showPrevSession ? 'bg-white p-2 rounded-lg' : ''} cursor-pointer`}
+                onClick={() => setShowPrevSession(!showPrevSession)}
+              >
+                Previous Session
+                <motion.span
+                  animate={{ rotate: showPrevSession ? 180 : 0 }}
+                  transition={{ duration: 0.3 }}
+                >
+                  ▼
+                </motion.span>
+              </h3>
+
+              <AnimatePresence>
+                {showPrevSession && previousSessions && (
+                  <motion.div
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: "auto" }}
+                    exit={{ opacity: 0, height: 0 }}
+                    transition={{ duration: 0.4 }}
+                    className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-4 overflow-hidden"
+                  >
+                    {previousSessions.map((session, index) => (
+                      <motion.div
+                        key={index}
+                        initial={{ opacity: 0, scale: 0.95 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        exit={{ opacity: 0, scale: 0.95 }}
+                        transition={{ duration: 0.3 }}
+                        className="p-4 bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow cursor-pointer"
+                        onClick={() => setSelectedPrevSession(session)}
+                      >
+                        <h5 className="font-medium text-gray-800 text-center">
+                          {session.academicYear}
+                        </h5>
+                      </motion.div>
+                    ))}
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </motion.div>
+
+            {selectedPrevSession && (
+              <PreviousSessionPopup
+                session={selectedPrevSession}
+                semesterId={semesterId}
+                onClose={() => setSelectedPrevSession(null)}
+              />
             )}
-
-          </div>
-
-          {selectedPrevSession && (
-            <PreviousSessionPopup
-              session={selectedPrevSession}
-              semesterId={semesterId}
-              onClose={() => setSelectedPrevSession(null)}
-            />
-          )}
-
-
-        </div>
-      )}
-
-    </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </motion.div>
   );
 };
 

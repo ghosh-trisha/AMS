@@ -1,5 +1,6 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
+import { motion } from "framer-motion"; // Import framer-motion
 import Loader from "../../components/basic/Loader";
 import axios from "axios";
 import ClassroomInfo from "../../components/classroom/ClassroomInfoCard";
@@ -19,7 +20,6 @@ const DetailedDemoClassroom = () => {
   const [paperToDelete, setPaperToDelete] = useState(null);
 
   const [currSessionId, setCurrSessionId] = useState(null);
- 
 
   const demoPapers = [
     {
@@ -37,7 +37,6 @@ const DetailedDemoClassroom = () => {
   ];
 
   useEffect(() => {
-   
     setTimeout(() => {
       setPapers(demoPapers);
       setLoading(false);
@@ -62,22 +61,57 @@ const DetailedDemoClassroom = () => {
     return <Loader loading={loading} />;
   }
 
-
   return (
-    <div className="p-6">
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.5 }}
+      className="p-6"
+    >
       {/* Classroom Header Section */}
-      <ClassroomInfo semesterId={semesterId} currSessionId={currSessionId}/>
+      <motion.div
+        initial={{ opacity: 0, y: -30 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+      >
+        <ClassroomInfo semesterId={semesterId} currSessionId={currSessionId} />
+      </motion.div>
 
       {/* Syllabuses Section */}
-      <SyllabusesCard semesterId={semesterId}  />
+      <motion.div
+        initial={{ opacity: 0, y: -30 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5, delay: 0.2 }}
+      >
+        <SyllabusesCard semesterId={semesterId} />
+      </motion.div>
 
       {/* Sessions Section */}
-      <SessionCard semesterId={semesterId}  setCurrSessionId={setCurrSessionId} />
+      <motion.div
+        initial={{ opacity: 0, y: -30 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5, delay: 0.4 }}
+      >
+        <SessionCard semesterId={semesterId} setCurrSessionId={setCurrSessionId} />
+      </motion.div>
 
       {/* Delete Confirmation Modal */}
       {showDeleteModal && (
-        <div className="fixed inset-0 backdrop-blur-[1px] flex items-center justify-center p-4 z-20">
-          <div className="bg-white rounded-xl p-6 w-full max-w-md shadow-2xl">
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.3 }}
+          className="fixed inset-0 backdrop-blur-[1px] flex items-center justify-center p-4 z-20"
+        >
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.9 }}
+            transition={{ duration: 0.3 }}
+            className="bg-white rounded-xl p-6 w-full max-w-md shadow-2xl"
+          >
             <h2 className="text-xl font-bold mb-4">Delete Paper</h2>
             <p className="mb-6 text-gray-600">
               Are you sure you want to delete this paper? This action cannot be undone.
@@ -96,10 +130,10 @@ const DetailedDemoClassroom = () => {
                 Confirm Delete
               </button>
             </div>
-          </div>
-        </div>
+          </motion.div>
+        </motion.div>
       )}
-    </div>
+    </motion.div>
   );
 };
 
