@@ -17,7 +17,7 @@ router.post('/attendance/update', attendanceController.updateAttendanceStatusAsT
 
 
 // get all week's schedule as a teacher
-router.get('/schedule/:teacherId', teacherController.getAllWeekScheduleAsTeacher);
+router.get('/schedule', teacherController.getAllWeekScheduleAsTeacher);
 
 
 module.exports = router;
