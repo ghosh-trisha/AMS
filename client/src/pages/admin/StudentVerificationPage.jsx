@@ -190,7 +190,13 @@ const StudentVerificationPage = () => {
             >
                 🔎 Verify Your students 🔍
             </motion.h1>
-            <p className="text-center text-lg text-gray-600 mb-10">Review and manage student verification status</p>
+            <motion.p className="text-center text-lg text-gray-600 mb-10"
+                initial={{ y: -50, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                transition={{ duration: 0.5 }}
+            >
+                Review and manage student verification status
+            </motion.p>
 
             {loading ? (
                 <div className="p-6 grid gap-4 animate-pulse">
