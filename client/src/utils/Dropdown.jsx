@@ -74,7 +74,7 @@ const DropdownComponent = ({
       payload[parentField] = parentId;
     }
 
-    console.log("Payload for creating new option:", payload);
+  
     axios
       .post(createApiUrl, payload)
       .then((res) => {

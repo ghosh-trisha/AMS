@@ -77,6 +77,8 @@ router.post('/teachers/all/available',teacherController.getAllAvailableTeachers 
 
 // student routes
 router.get('/students/all',studentController.getAllStudents );
+router.get('/students/all/verify/status',studentController.getAllStudentsVerifyStatus );
+router.post('/students/all/verify/status',studentController.updateOneStudentsVerifyStatus );
 
 
 // building routes

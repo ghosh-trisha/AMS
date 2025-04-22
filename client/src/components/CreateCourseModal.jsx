@@ -47,8 +47,6 @@ const CreateCourseModal = ({ isOpen, onClose }) => {
       });
       const courseId = courseRes.data.data._id;
       
-      console.log("courseId", courseId);
-      console.log("numSemesters", numSemesters);
       // Then, create the semester entry with total number of semesters and the course id
       await axios.post(`${baseURL}/semesters`, {
         totalSemesters: numSemesters,
