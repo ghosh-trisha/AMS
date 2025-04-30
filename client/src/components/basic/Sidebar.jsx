@@ -41,6 +41,11 @@ const Sidebar = () => {
                 </Link>
               </li>
               <li>
+                <Link to="/admin/teacher/verification" className="block p-2 hover:bg-gray-700 rounded">
+                  Teacher Verification
+                </Link>
+              </li>
+              <li>
                 <Link to="/admin/student" className="block p-2 hover:bg-gray-700 rounded">
                   Student
                 </Link>

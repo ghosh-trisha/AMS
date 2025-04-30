@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { toast } from 'react-hot-toast';
@@ -40,7 +39,8 @@ const StudentClassesPage = () => {
         studentId: id,
         sessionId: cls.sessionId,
         scheduleId: cls.scheduleId,
-        subjectId: cls.subjectId
+        subjectId: cls.subjectId,
+        classAttendanceId: cls.classAttendanceId,
       }); 
 
       toast.success('Attendance marked successfully!');
@@ -85,13 +85,13 @@ const StudentClassesPage = () => {
   };
 
   return (
-    <div className="p-6 bg-gray-50 min-h-screen">
-      {/* Ensuring header is always visible */}
+    <div className="p-6 bg-gradient-to-r from-blue-50 to-blue-100 min-h-screen">
+      {/* Animated Page Header */}
       <motion.h1 
         initial={{ opacity: 0, y: -20 }} 
         animate={{ opacity: 1, y: 0 }} 
         transition={{ duration: 0.5 }} 
-        className="text-2xl font-bold text-blue-700 mb-6 text-center"
+        className="text-4xl font-extrabold text-blue-800 mb-8 text-center drop-shadow-lg"
       >
         📚 Today's Classes
       </motion.h1>
@@ -104,13 +104,13 @@ const StudentClassesPage = () => {
         </div>
       ) : (
         <motion.div 
-          className="space-y-4 grid grid-cols-2 gap-4"
+          className="space-y-6 grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6"
           initial={{ opacity: 0 }} 
           animate={{ opacity: 1 }} 
           transition={{ duration: 0.5 }}
         >
           {classes.length === 0 ? (
-            <div className="text-center text-gray-500">No classes scheduled for today.</div>
+            <div className="text-center text-gray-500 col-span-full">No classes scheduled for today.</div>
           ) : (
             classes.map((cls, index) => (
               <motion.div
@@ -118,29 +118,33 @@ const StudentClassesPage = () => {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.3, delay: index * 0.1 }}
-                className="bg-white p-4 rounded-lg shadow-sm hover:shadow-md transition-shadow border border-gray-100"
+                className="bg-white p-6 rounded-2xl shadow-md hover:shadow-xl transition-shadow border border-gray-200 relative overflow-hidden"
               >
-                <div className="flex justify-between items-center">
-                  <div>
-                    <h2 className="text-lg font-semibold text-gray-800">
-                      {cls.subjectName} ({cls.subjectCode})
-                    </h2>
-                    <p className="text-sm text-gray-600">{cls.subjectCategory}</p>
-                    <p className="text-sm text-gray-600">
-                      {formatTime(cls.start_time)} - {formatTime(cls.end_time)}
-                    </p>
-                    <div className="flex justify-center items-center gap-4">
-                      {cls.teachers.map((teacher, idx) => (
-                        <p key={idx} className="text-sm text-gray-600">
-                          {teacher.name}
-                        </p>
-                      ))}
-                    </div>
+                {/* Decorative background circle */}
+                <div className="absolute -top-10 -right-10 w-32 h-32 bg-blue-100 rounded-full"></div>
+                
+                <div className="relative z-10">
+                  <h2 className="text-xl text-gray-800 mb-1">
+                    <span className="font-bold">{cls.subjectName}</span> ({cls.subjectCode})
+                  </h2>
+                  <p className="text-sm text-blue-700 mb-1">{cls.subjectCategory}</p>
+                  <p className="text-sm text-gray-600 mb-2">Building: {cls.buildingName}</p>
+                  <p className="text-sm text-gray-600 mb-2">Room: {cls.roomName}</p>
+                  <p className="text-sm font-medium text-gray-700 mb-2">
+                    {formatTime(cls.start_time)} - {formatTime(cls.end_time)}
+                  </p>
+                  
+                  <div className="flex flex-wrap gap-2 mb-4">
+                    {cls.teachers.map((teacher, idx) => (
+                      <span key={idx} className="text-xs bg-blue-200 text-blue-800 px-2 py-1 rounded-full">
+                        {teacher.name}
+                      </span>
+                    ))}
                   </div>
 
                   {cls.attendanceStatus ? (
                     <div
-                      className={`px-4 py-2 text-white rounded-md capitalize ${getStatusColor(
+                      className={`px-4 py-2 text-white rounded-lg text-center capitalize ${getStatusColor(
                         cls.attendanceStatus
                       )}`}
                     >
@@ -149,8 +153,12 @@ const StudentClassesPage = () => {
                   ) : (
                     <button
                       onClick={() => handleMarkAttendance(index)}
-                      disabled={attendanceLoading[cls._id]}
-                      className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors flex items-center gap-2 cursor-pointer"
+                      disabled={attendanceLoading[cls._id] || !cls.classAttendanceId}
+                      className={`w-full px-4 py-2 rounded-lg font-semibold transition-colors 
+                        ${(!cls.classAttendanceId || attendanceLoading[cls._id]) 
+                          ? 'bg-gray-400 cursor-not-allowed text-white' 
+                          : 'cursor-pointer bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white'}
+                      `}
                     >
                       {'Mark Attendance'}
                     </button>

@@ -4,8 +4,7 @@ const sessionSchema = new mongoose.Schema({
     // academicYear: { type: String, required: true, unique: true },
     academicYear: { 
         type: String, 
-        required: true, 
-        unique: true,
+        required: true,
         match: /^\d{4}-\d{4}$/
       },
     syllabusId: { type: mongoose.Schema.Types.ObjectId, ref: 'Syllabus', required: true },

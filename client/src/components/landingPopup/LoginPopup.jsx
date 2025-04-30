@@ -68,7 +68,7 @@ const LoginPopup = ({ setShowPopup }) => {
       setShowPopup(false);
       navigate(`/${role}/dashboard`);
     } catch (error) {
-      // toast.error(error.response.data.message);
+      toast.error(error.response.data.message);
       console.error(error);
     }
   };

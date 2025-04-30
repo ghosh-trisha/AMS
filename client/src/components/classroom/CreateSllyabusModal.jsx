@@ -3,8 +3,10 @@ import Select from 'react-select';
 import { toast } from 'react-hot-toast';
 import axios from 'axios';
 import Loader from '../basic/Loader';
+import HashLoader from "react-spinners/HashLoader";
 
-const CreateSyllabusModal = ({ isOpen, onClose , semesterId}) => {
+
+const CreateSyllabusModal = ({ isOpen, onClose, semesterId }) => {
   const [year, setYear] = useState('');
   const [subjects, setSubjects] = useState([]);
   const [categories, setCategories] = useState([]);
@@ -46,20 +48,21 @@ const CreateSyllabusModal = ({ isOpen, onClose , semesterId}) => {
     try {
       setLoading(true);
       await axios.post('http://localhost:8080/api/admin/syllabus', {
-        name:year,
+        name: year,
         semesterId,
         subjects: subjects.map(subject => ({
-          subjectName:subject.name,
-          subjectCode:subject.code,
+          subjectName: subject.name,
+          subjectCode: subject.code,
           subjectCategory: subject.category.value
         }))
       }
-    ,{
-      headers: {
-        'Content-Type': 'application/json'}
-    }
-    
-    );
+        , {
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        }
+
+      );
       toast.success('Syllabus created successfully!');
       onClose();
     } catch (error) {
@@ -91,12 +94,12 @@ const CreateSyllabusModal = ({ isOpen, onClose , semesterId}) => {
             />
           </div>
           <button
-              type="button"
-              onClick={handleAddSubject}
-              className="w-full py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors cursor-pointer"
-            >
-              Add Subject
-            </button>
+            type="button"
+            onClick={handleAddSubject}
+            className="w-full py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors cursor-pointer"
+          >
+            Add Subject
+          </button>
           <div className=" grid grid-cols-2 gap-4">
             {subjects.map((subject, index) => (
               <div key={index} className="border p-4 rounded-lg space-y-4 border-gray-200">
@@ -137,7 +140,7 @@ const CreateSyllabusModal = ({ isOpen, onClose , semesterId}) => {
               </div>
             ))}
 
-           
+
           </div>
         </div>
 
@@ -156,8 +159,10 @@ const CreateSyllabusModal = ({ isOpen, onClose , semesterId}) => {
             className="px-4 py-2 bg-green-500 text-white rounded-md hover:bg-green-600 transition-colors flex items-center gap-2 cursor-pointer"
             disabled={loading}
           >
-            {loading && <Loader loading={true} size={10} />}
-            Create Syllabus
+            <div className='flex gap-3'>
+              {loading && <HashLoader color={"blue"} loading={loading} size={20} />}
+              Create Syllabus
+            </div>
           </button>
         </div>
       </div>

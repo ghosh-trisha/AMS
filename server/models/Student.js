@@ -30,7 +30,11 @@ const studentSchema = new mongoose.Schema({
   },
   sessionId: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Session', required: true }],
   promote_flag: { type: Boolean, default: false },
-  isVerified: { type: Boolean, default: false }
+  isVerified: { 
+    type: Number, 
+    enum: [0, 1, 2],  // 0 = Pending, 1 = Verified, 2 = Rejected
+    default: 0 
+  }
 }, {
   timestamps: true
 });

@@ -8,6 +8,10 @@ const router = express.Router();
 router.get('/classes/:teacherId', teacherController.getTodaysClassesAsTeacher);
 
 
+// start a particular today's classes as a teacher
+router.post('/start/class/attendence', attendanceController.startClassAttendence);
+
+
 // get attendance request as a teacher
 router.get('/attendance/:scheduleId', attendanceController.getAttendanceRequestsAsTeacher);
 

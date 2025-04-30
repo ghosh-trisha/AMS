@@ -5,6 +5,7 @@ const Teacher = require('../../models/Teacher');
 const Schedule = require('../../models/Schedule');
 const ScheduleTeacherMapper = require('../../models/ScheduleTeacherMapper');
 const jwt = require('jsonwebtoken');
+const ClassAttendance = require('../../models/ClassAttendance');
 
 // Controller function to get all teachers
 exports.getAllTeachers = catchAsync(async (req, res, next) => {
@@ -28,9 +29,6 @@ const isOverlapping = (startA, endA, startB, endB) => {
 };
 exports.getAllAvailableTeachers = catchAsync(async (req, res, next) => {
   const { day, startTime, endTime } = req.body;
-  // console.log(day)
-  // console.log(formatTime(startTime))
-  // console.log(formatTime(endTime))
 
   if (!startTime || !endTime || !day) {
     return next(new ApiError('startTime, endTime and day are required', 400));
@@ -41,7 +39,6 @@ exports.getAllAvailableTeachers = catchAsync(async (req, res, next) => {
   const overlappingSchedules = allSchedules.filter(schedule =>
     isOverlapping(startTime, endTime, schedule.start_time, schedule.end_time)
   );
-  // console.log(overlappingSchedules)
 
   const overlappingScheduleIds = overlappingSchedules.map(s => s._id);
 
@@ -89,10 +86,6 @@ exports.getTodaysClassesAsTeacher = catchAsync(async (req, res, next) => {
   const mappedSchedules = await ScheduleTeacherMapper.find({ teacherId })
     .populate('scheduleId');
 
-  // if (!mappedSchedules.length) {
-  //   return next(new ApiError('No classes found for this teacher', 404));
-  // }
-  console.log(mappedSchedules)
   const scheduleIds = mappedSchedules.map((map) => map?.scheduleId?._id).filter((ele) => ele != null);
 
   // Use aggregation pipeline to fetch class details for the schedule IDs
@@ -198,20 +191,33 @@ exports.getTodaysClassesAsTeacher = catchAsync(async (req, res, next) => {
         programName: '$program.name',
         levelName: '$level.name',
         departmentName: '$department.name',
-        classId: '$_id',
+        scheduleId: '$_id',
+        subjectId: '$subject._id',
+        sessionId: '$session._id',
       }
     }
   ]);
 
-  // if (!classes.length) {
-  //   return next(new ApiError('No classes found for today', 404));
-  // }
+  const startOfDay = new Date(today.setHours(0, 0, 0, 0));
+  const endOfDay = new Date(today.setHours(23, 59, 59, 999));
+  const enrichedClasses = await Promise.all(classes.map(async (cls) => {
+    const attendance = await ClassAttendance.findOne({
+      subjectId: cls.subjectId,
+      sessionId: cls.sessionId,
+      scheduleId: cls.scheduleId,
+      date: { $gte: startOfDay, $lte: endOfDay }
+    });
 
- 
+    return {
+      ...cls,
+      classAttendanceId: attendance ? attendance._id : null
+    };
+  }));
+
   res.status(200).json({
     status: 'success',
-    results: classes.length,
-    data: classes
+    results: enrichedClasses.length,
+    data: enrichedClasses
   });
 });
 
@@ -227,17 +233,17 @@ exports.getAllWeekScheduleAsTeacher = catchAsync(async (req, res, next) => {
   jwt.verify(token, accessTokenSecret, async (err, decoded) => {
     if (err) return res.status(403).json({ message: 'Invalid or expired token' });
 
-    const teacherId= decoded.id;
-    
+    const teacherId = decoded.id;
+
     if (!teacherId || !mongoose.Types.ObjectId.isValid(teacherId)) {
       return next(new ApiError('Invalid or missing Teacher ID', 400));
     }
-  
+
     const teacherExists = await Teacher.findById(teacherId);
     if (!teacherExists) {
       return next(new ApiError('Teacher not found', 404));
     }
-  
+
     const schedules = await ScheduleTeacherMapper.aggregate([
       {
         $match: { teacherId: new mongoose.Types.ObjectId(teacherId) }
@@ -394,7 +400,7 @@ exports.getAllWeekScheduleAsTeacher = catchAsync(async (req, res, next) => {
         }
       }
     ]);
-  
+
     res.status(200).json({
       status: 'success',
       results: schedules.length,
@@ -403,3 +409,45 @@ exports.getAllWeekScheduleAsTeacher = catchAsync(async (req, res, next) => {
   })
 });
 
+
+// get all students' verify status
+exports.getPendingVerifiedTeachers = catchAsync(async (req, res, next) => {
+  const pendingTeachers = await Teacher.find({ verified: 0 })
+    .select('name email phone verified');
+
+  res.status(200).json({
+    success: true,
+    message: 'Pending verification teachers fetched successfully',
+    totalTeachers: pendingTeachers.length,
+    data: pendingTeachers
+  });
+});
+
+
+// update one student verify status
+exports.updateOneTeacherVerifyStatus = catchAsync(async (req, res, next) => {
+  const { teacherId, verified } = req.body;
+
+  if (!teacherId || typeof verified !== 'number' || ![0, 1, 2].includes(verified)) {
+    return res.status(400).json({
+      success: false,
+      message: 'Invalid input. Please provide a valid teacherId and verification status (0, 1, or 2).'
+    });
+  }
+
+  const updatedTeacher = await Teacher.findByIdAndUpdate(
+    teacherId,
+    { verified },
+    { new: true }
+  );
+
+  if (!updatedTeacher) {
+    return res.status(404).json({ success: false, message: 'Teacher not found' });
+  }
+
+  res.status(200).json({
+    success: true,
+    message: 'Teacher verification status updated successfully',
+    data: updatedTeacher
+  });
+});

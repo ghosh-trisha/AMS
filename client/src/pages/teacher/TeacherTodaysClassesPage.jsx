@@ -2,7 +2,8 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useParams, useNavigate } from 'react-router-dom';
 import { CalendarDays, Clock, BookOpen } from 'lucide-react';
-import { motion } from 'framer-motion'; 
+import { motion } from 'framer-motion';
+import { toast } from 'react-hot-toast';
 
 const TodaysClassesForTeacher = () => {
   const { teacherId } = useParams();
@@ -34,7 +35,32 @@ const TodaysClassesForTeacher = () => {
   }, [teacherId]);
 
   const handleCardClick = (cls) => {
-    navigate(`/teacher/requests/${cls.classId}`);
+    navigate(`/teacher/requests/${cls.scheduleId}`);
+  };
+
+  const handleStartAttendance = async (cls, index) => {
+    try {
+      const payload = {
+        startedBy: teacherId,
+        subjectId: cls.subjectId,
+        scheduleId: cls.scheduleId,
+        sessionId: cls.sessionId
+      };
+
+      const res = await axios.post('http://localhost:8080/api/teacher/start/class/attendence', payload);
+
+      toast.success('Class attendance started successfully!');
+
+      setClasses((prevClasses) =>
+        prevClasses.map((item, i) =>
+          i === index ? { ...item, classAttendanceId: res.data.data.classAttendanceId || true } : item
+        )
+      );
+
+    } catch (err) {
+      console.error(err);
+      toast.error(err.response?.data?.message || 'Failed to start attendance');
+    }
   };
 
   if (loading) {
@@ -124,6 +150,22 @@ const TodaysClassesForTeacher = () => {
                 <p><span className="font-medium">Program:</span> {cls.programName}</p>
                 <p><span className="font-medium">Level:</span> {cls.levelName}</p>
                 <p><span className="font-medium">Department:</span> {cls.departmentName}</p>
+              </div>
+              <div className="mt-4">
+                <button
+                  className={`w-full font-semibold py-2 px-4 rounded-lg transition duration-300 
+                    ${cls.classAttendanceId 
+                      ? 'bg-gray-400 cursor-not-allowed text-white' 
+                      : 'bg-green-600 hover:bg-green-700 text-white cursor-pointer'}
+                  `}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleStartAttendance(cls, index);
+                  }}
+                  disabled={cls.classAttendanceId}
+                >
+                  {cls.classAttendanceId ? 'Attendance Already Started' : 'Start Taking Attendance'}
+                </button>
               </div>
             </motion.div>
           ))}

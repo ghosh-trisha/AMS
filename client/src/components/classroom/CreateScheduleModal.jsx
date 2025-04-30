@@ -411,7 +411,7 @@ const CreateScheduleModal = ({ currSessionId, onClose, onScheduleCreated }) => {
               className="cursor-pointer px-4 py-2 bg-green-500 text-white rounded-md hover:bg-green-600 transition-colors flex items-center gap-2"
               disabled={loading || scheduleEntries.length === 0}
             >
-              {loading && <Loader loading={true} size={10} />}
+              {loading && <Loader color={"blue"} loading={true} size={20} hash={true} />}
               Create Schedules
             </button>
           </div>

@@ -47,7 +47,8 @@ const CreateSessionModal = ({ onClose, semesterId }) => {
       toast.success('Academic session created successfully!');
       onClose();
     } catch (error) {
-      toast.error(error.data.message || 'Failed to create session');
+      console.log(error);
+      toast.error(error?.response?.data?.message || 'Failed to create session');
     } finally {
       setLoading(false);
     }
@@ -104,7 +105,7 @@ const CreateSessionModal = ({ onClose, semesterId }) => {
               className="px-4 py-2 bg-green-500 text-white rounded-md hover:bg-green-600 transition-colors flex items-center gap-2"
               disabled={loading || syllabusLoading}
             >
-              {loading && <Loader loading={true} size={10} />}
+              {loading && <Loader color={"blue"} loading={loading} size={20} hash={true} />}
               Create Session
             </button>
           </div>

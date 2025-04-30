@@ -7,13 +7,57 @@ const Schedule = require('../models/Schedule');
 const Subject = require('../models/Subject');
 const mongoose = require('mongoose');
 const Teacher = require('../models/Teacher');
+const ClassAttendance = require('../models/ClassAttendance');
+
+
+// Start a particular today's class attendance as a teacher
+exports.startClassAttendence = catchAsync(async (req, res, next) => {
+    const { startedBy, subjectId, scheduleId, sessionId } = req.body;
+
+    if (!startedBy || !subjectId || !scheduleId || !sessionId) {
+        return res.status(400).json({ message: "All fields are required." });
+    }
+
+    const today = new Date();
+    const startOfDay = new Date(today.setHours(0, 0, 0, 0));
+    const endOfDay = new Date(today.setHours(23, 59, 59, 999));
+
+    const existing = await ClassAttendance.findOne({
+        startedBy,
+        subjectId,
+        scheduleId,
+        sessionId,
+        date: { $gte: startOfDay, $lte: endOfDay }
+    });
+
+    if (existing) {
+        return res.status(409).json({
+            message: "Class attendance has already been started for this schedule today.",
+            data: existing
+        });
+    }
+
+    const newClassAttendance = await ClassAttendance.create({
+        startedBy,
+        subjectId,
+        scheduleId,
+        sessionId,
+        date: new Date(),
+    });
+
+    return res.status(201).json({
+        message: "Class attendance started successfully.",
+        data: newClassAttendance,
+    });
+})
+
 
 // create attendance request as a student
 exports.createAttendanceRequestAsStudent = catchAsync(async (req, res, next) => {
-    const { studentId, sessionId, scheduleId, subjectId } = req.body;
+    const { studentId, sessionId, scheduleId, subjectId, classAttendanceId } = req.body;
 
     // Validate input
-    if (!studentId || !sessionId || !scheduleId || !subjectId) {
+    if (!studentId || !sessionId || !scheduleId || !subjectId || !classAttendanceId) {
         return next(new ApiError('All fields are required', 400));
     }
 
@@ -41,6 +85,12 @@ exports.createAttendanceRequestAsStudent = catchAsync(async (req, res, next) => 
         return next(new ApiError('Subject not found', 404));
     }
 
+    // Check if classAttendanceId exists
+    const classAttendance = await ClassAttendance.findById(classAttendanceId);
+    if (!classAttendance) {
+        return next(new ApiError('Class is not started yet', 404));
+    }
+
     // Create attendance request
     const newAttendance = await Attendance.create({
         studentId,
@@ -49,7 +99,7 @@ exports.createAttendanceRequestAsStudent = catchAsync(async (req, res, next) => 
         scheduleId,
         subjectId,
         classDate: new Date(),
-
+        classAttendanceId
     });
 
     res.status(201).json({
@@ -147,49 +197,49 @@ exports.updateAttendanceStatusAsTeacher = catchAsync(async (req, res, next) => {
 // get attendance status as a student
 exports.getAttendanceStatusAsStudent = catchAsync(async (req, res, next) => {
     const { studentId, sessionId, scheduleId, subjectId } = req.params;
-  
+
     // Validate params
     if (!studentId || !scheduleId || !sessionId || !subjectId) {
-      return next(new ApiError('studentId, scheduleId, sessionId, and subjectId are required', 400));
+        return next(new ApiError('studentId, scheduleId, sessionId, and subjectId are required', 400));
     }
-  
+
     // Check if the attendance record exists for today's date
     const today = new Date();
     const startOfDay = new Date(today.setHours(0, 0, 0, 0));
     const endOfDay = new Date(today.setHours(23, 59, 59, 999));
-  
+
     const attendance = await Attendance.findOne({
-      studentId,
-      scheduleId,
-      sessionId,
-      subjectId,
-      classDate: { $gte: startOfDay, $lte: endOfDay }
+        studentId,
+        scheduleId,
+        sessionId,
+        subjectId,
+        classDate: { $gte: startOfDay, $lte: endOfDay }
     })
-    .populate('acceptedBy', 'name email phone')
-    .populate({
-        path: 'subjectId',
-        select: 'name code categoryId',
-        populate: {
-          path: 'categoryId',
-          select: 'name'
-        }
-      });
-  
+        .populate('acceptedBy', 'name email phone')
+        .populate({
+            path: 'subjectId',
+            select: 'name code categoryId',
+            populate: {
+                path: 'categoryId',
+                select: 'name'
+            }
+        });
+
     if (!attendance) {
-      return next(new ApiError('No attendance record found for today', 404));
+        return next(new ApiError('No attendance record found for today', 404));
     }
-  
+
     // Response
     res.status(200).json({
-      status: 'success',
-      data: {
-        status: attendance.status,
-        acceptedBy: attendance.acceptedBy || 'Not yet accepted',
-        subject: {
-            name: attendance.subjectId?.name,
-            code: attendance.subjectId?.code,
-            category: attendance.subjectId?.categoryId?.name || 'Unknown'
-          }
-      },
+        status: 'success',
+        data: {
+            status: attendance.status,
+            acceptedBy: attendance.acceptedBy || 'Not yet accepted',
+            subject: {
+                name: attendance.subjectId?.name,
+                code: attendance.subjectId?.code,
+                category: attendance.subjectId?.categoryId?.name || 'Unknown'
+            }
+        },
     });
-  });
+});

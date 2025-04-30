@@ -73,12 +73,14 @@ router.delete('/schedule/:scheduleId', scheduleController.deleteSchedule);
 //teacher routes
 router.get('/teachers/all',teacherController.getAllTeachers );
 router.post('/teachers/all/available',teacherController.getAllAvailableTeachers );
+router.get('/teachers/all/verify/status',teacherController.getPendingVerifiedTeachers );
+router.post('/teachers/all/verify/status',teacherController.updateOneTeacherVerifyStatus );
 
 
 // student routes
 router.get('/students/all',studentController.getAllStudents );
-router.get('/students/all/verify/status',studentController.getAllStudentsVerifyStatus );
-router.post('/students/all/verify/status',studentController.updateOneStudentsVerifyStatus );
+router.get('/students/all/verify/status',studentController.getPendingVerifiedStudents );
+router.post('/students/all/verify/status',studentController.updateOneStudentVerifyStatus );
 
 
 // building routes

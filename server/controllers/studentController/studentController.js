@@ -11,6 +11,7 @@ const Program = require('../../models/Program');
 const Course = require('../../models/Course');
 const Semester = require('../../models/Semester');
 const Session = require('../../models/Session');
+const ClassAttendance = require('../../models/ClassAttendance');
 
 
 // Controller function to get all students
@@ -52,86 +53,6 @@ exports.getTodaysClassesAsStudent = catchAsync(async (req, res, next) => {
     const sessionIdToUse = givenSessionId
         ? new mongoose.Types.ObjectId(givenSessionId)
         : student.sessionId[student.sessionId.length - 1];
-    // const schedules = await Schedule.aggregate([
-    //     {
-    //         $match: {
-    //             sessionId: sessionIdToUse,
-    //             day: weekday
-    //         }
-    //     },
-    //     {
-    //         // Added lookup to ScheduleTeacherMapper to get teachers for each schedule
-    //         $lookup: {
-    //             from: 'scheduleteachermappers',
-    //             localField: '_id',
-    //             foreignField: 'scheduleId',
-    //             as: 'scheduleTeachers'
-    //         }
-    //     },
-    //     { $unwind: '$scheduleTeachers' },
-    //     {
-    //         // Lookup to fetch teacher details based on teacherId from the mapping
-    //         $lookup: {
-    //             from: 'teachers',
-    //             localField: 'scheduleTeachers.teacherId',
-    //             foreignField: '_id',
-    //             as: 'teacherDetails'
-    //         }
-    //     },
-    //     { $unwind: '$teacherDetails' },
-    //     {
-    //         $lookup: {
-    //             from: 'subjects',
-    //             localField: 'subjectId',
-    //             foreignField: '_id',
-    //             as: 'subject'
-    //         }
-    //     },
-    //     { $unwind: '$subject' },
-    //     {
-    //         $lookup: {
-    //             from: 'categories',
-    //             localField: 'subject.categoryId',
-    //             foreignField: '_id',
-    //             as: 'subjectCategory'
-    //         }
-    //     },
-    //     { $unwind: '$subjectCategory' },
-    //     {
-    //         // Group to collect all teachers for a given schedule
-    //         $group: {
-    //             _id: '$_id',
-    //             day: { $first: '$day' },
-    //             start_time: { $first: '$start_time' },
-    //             end_time: { $first: '$end_time' },
-    //             subjectName: { $first: '$subject.name' },
-    //             subjectCode: { $first: '$subject.code' },
-    //             subjectCategory: { $first: '$subjectCategory.name' },
-    //             teachers: {
-    //                 $push: {
-    //                     name: '$teacherDetails.name',
-    //                     email: '$teacherDetails.email',
-    //                     phone: '$teacherDetails.phone'
-    //                 }
-    //             }
-    //         }
-    //     },
-    //     {
-    //         $project: {
-    //             _id: 0,
-    //             day: 1,
-    //             start_time: 1,
-    //             end_time: 1,
-    //             subjectName: 1,
-    //             subjectCode: 1,
-    //             subjectCategory: 1,
-    //             teachers: 1
-    //         }
-    //     }
-    // ]);
-
-
-    // Aggregate starting from ScheduleTeacherMapper instead of Schedule
 
     const schedules = await ScheduleTeacherMapper.aggregate([
         {
@@ -177,6 +98,15 @@ exports.getTodaysClassesAsStudent = catchAsync(async (req, res, next) => {
         },
         { $unwind: '$subjectCategory' },
         {
+            $lookup: {
+                from: 'rooms',
+                localField: 'scheduleDetails.roomId',
+                foreignField: '_id',
+                as: 'roomDetails'
+            }
+        },
+        { $unwind: '$roomDetails' },
+        {
             $group: {
                 _id: '$scheduleId',
                 day: { $first: '$scheduleDetails.day' },
@@ -195,6 +125,8 @@ exports.getTodaysClassesAsStudent = catchAsync(async (req, res, next) => {
                 scheduleId: { $first: '$scheduleDetails._id' },
                 subjectId: { $first: '$subject._id' },
                 sessionId: { $first: '$scheduleDetails.sessionId' },
+                roomName: { $first: '$roomDetails.name' },
+                buildingName: { $first: '$roomDetails.buildingName' },
             }
         },
         {
@@ -209,7 +141,9 @@ exports.getTodaysClassesAsStudent = catchAsync(async (req, res, next) => {
                 teachers: 1,
                 scheduleId: 1,
                 subjectId: 1,
-                sessionId: 1
+                sessionId: 1,
+                roomName: 1,
+                buildingName: 1,
             }
         }
     ]);
@@ -222,9 +156,17 @@ exports.getTodaysClassesAsStudent = catchAsync(async (req, res, next) => {
             subjectId: schedule.subjectId,
             classDate: { $gte: startOfDay, $lte: endOfDay }
         });
-        // console.log(attendance)
 
         schedule.attendanceStatus = attendance ? attendance.status : null;
+
+        const classAttendance = await ClassAttendance.findOne({
+            sessionId: schedule.sessionId,
+            scheduleId: schedule.scheduleId,
+            subjectId: schedule.subjectId,
+            date: { $gte: startOfDay, $lte: endOfDay }
+        });
+
+        schedule.classAttendanceId = classAttendance ? classAttendance._id : null;
     }
 
     res.status(200).json({
@@ -259,130 +201,40 @@ exports.getAllCurrentSessionsOfAStudent = catchAsync(async (req, res, next) => {
 
 
 // get all students' verify status
-// exports.getAllStudentsVerifyStatus = catchAsync(async (req, res, next) => {
-//     try {
-//         const groupedMasters = await StudentMaster.aggregate([
-//             {
-//                 $group: {
-//                     _id: {
-//                         studentId: "$studentId",
-//                         departmentId: "$departmentId",
-//                         levelId: "$levelId",
-//                         programId: "$programId",
-//                         courseId: "$courseId",
-//                         semesterId: "$semesterId",
-//                         sessionId: "$sessionId"
-//                     }
-//                 }
-//             },
-//             {
-//                 $lookup: {
-//                     from: "students",
-//                     localField: "_id.studentId",
-//                     foreignField: "_id",
-//                     as: "student"
-//                 }
-//             },
-//             { $unwind: "$student" },
-//             {
-//                 $lookup: {
-//                     from: "departments",
-//                     localField: "_id.departmentId",
-//                     foreignField: "_id",
-//                     as: "department"
-//                 }
-//             },
-//             { $unwind: "$department" },
-//             {
-//                 $lookup: {
-//                     from: "levels",
-//                     localField: "_id.levelId",
-//                     foreignField: "_id",
-//                     as: "level"
-//                 }
-//             },
-//             { $unwind: "$level" },
-//             {
-//                 $lookup: {
-//                     from: "programs",
-//                     localField: "_id.programId",
-//                     foreignField: "_id",
-//                     as: "program"
-//                 }
-//             },
-//             { $unwind: "$program" },
-//             {
-//                 $lookup: {
-//                     from: "courses",
-//                     localField: "_id.courseId",
-//                     foreignField: "_id",
-//                     as: "course"
-//                 }
-//             },
-//             { $unwind: "$course" },
-//             {
-//                 $lookup: {
-//                     from: "semesters",
-//                     localField: "_id.semesterId",
-//                     foreignField: "_id",
-//                     as: "semester"
-//                 }
-//             },
-//             { $unwind: "$semester" },
-//             {
-//                 $lookup: {
-//                     from: "sessions",
-//                     localField: "_id.sessionId",
-//                     foreignField: "_id",
-//                     as: "session"
-//                 }
-//             },
-//             { $unwind: "$session" },
-//             {
-//                 $project: {
-//                     _id: 0,
-//                     studentId: "$_id.studentId",
-//                     name: "$student.name",
-//                     email: "$student.email",
-//                     phone: "$student.phone",
-//                     isVerified: "$student.isVerified",
-//                     departmentName: "$department.name",
-//                     levelName: "$level.name",
-//                     programName: "$program.name",
-//                     courseName: "$course.name",
-//                     semesterName: "$semester.name",
-//                     sessionAcademicYear: "$session.academicYear"
-//                 }
-//             }
-//         ]);
-
-//         res.status(200).json({
-//             success: true,
-//             message: "Student verify status fetched successfully",
-//             totalStudents: groupedMasters.length,
-//             data: groupedMasters
-//         });
-//     } catch (error) {
-//         console.error("Error fetching grouped student verify status:", error);
-//         res.status(500).json({ success: false, message: "Internal Server Error" });
-//     }
-// });
-exports.getAllStudentsVerifyStatus = catchAsync(async (req, res, next) => {
+exports.getPendingVerifiedStudents = catchAsync(async (req, res, next) => {
     try {
-        const studentMasters = await StudentMaster.aggregate([
+        const groupedMasters = await StudentMaster.aggregate([
+            {
+                $group: {
+                    _id: {
+                        studentId: "$studentId",
+                        departmentId: "$departmentId",
+                        levelId: "$levelId",
+                        programId: "$programId",
+                        courseId: "$courseId",
+                        semesterId: "$semesterId",
+                        sessionId: "$sessionId"
+                    }
+                }
+            },
             {
                 $lookup: {
                     from: "students",
-                    localField: "studentId",
+                    localField: "_id.studentId",
                     foreignField: "_id",
                     as: "student"
                 }
             },
             { $unwind: "$student" },
             {
+                $match: {
+                    "student.isVerified": 0
+                }
+            },
+            {
                 $lookup: {
                     from: "departments",
-                    localField: "departmentId",
+                    localField: "_id.departmentId",
                     foreignField: "_id",
                     as: "department"
                 }
@@ -391,7 +243,7 @@ exports.getAllStudentsVerifyStatus = catchAsync(async (req, res, next) => {
             {
                 $lookup: {
                     from: "levels",
-                    localField: "levelId",
+                    localField: "_id.levelId",
                     foreignField: "_id",
                     as: "level"
                 }
@@ -400,7 +252,7 @@ exports.getAllStudentsVerifyStatus = catchAsync(async (req, res, next) => {
             {
                 $lookup: {
                     from: "programs",
-                    localField: "programId",
+                    localField: "_id.programId",
                     foreignField: "_id",
                     as: "program"
                 }
@@ -409,7 +261,7 @@ exports.getAllStudentsVerifyStatus = catchAsync(async (req, res, next) => {
             {
                 $lookup: {
                     from: "courses",
-                    localField: "courseId",
+                    localField: "_id.courseId",
                     foreignField: "_id",
                     as: "course"
                 }
@@ -418,7 +270,7 @@ exports.getAllStudentsVerifyStatus = catchAsync(async (req, res, next) => {
             {
                 $lookup: {
                     from: "semesters",
-                    localField: "semesterId",
+                    localField: "_id.semesterId",
                     foreignField: "_id",
                     as: "semester"
                 }
@@ -427,7 +279,7 @@ exports.getAllStudentsVerifyStatus = catchAsync(async (req, res, next) => {
             {
                 $lookup: {
                     from: "sessions",
-                    localField: "sessionId",
+                    localField: "_id.sessionId",
                     foreignField: "_id",
                     as: "session"
                 }
@@ -435,68 +287,41 @@ exports.getAllStudentsVerifyStatus = catchAsync(async (req, res, next) => {
             { $unwind: "$session" },
             {
                 $project: {
+                    _id: 0,
+                    studentId: "$_id.studentId",
+                    name: "$student.name",
+                    email: "$student.email",
+                    phone: "$student.phone",
+                    isVerified: "$student.isVerified",
                     departmentName: "$department.name",
                     levelName: "$level.name",
                     programName: "$program.name",
                     courseName: "$course.name",
                     semesterName: "$semester.name",
-                    sessionAcademicYear: "$session.academicYear",
-                    student: {
-                        studentId: "$studentId",
-                        name: "$student.name",
-                        email: "$student.email",
-                        phone: "$student.phone",
-                        isVerified: "$student.isVerified"
-                    }
+                    sessionAcademicYear: "$session.academicYear"
                 }
             }
         ]);
 
-        const nestedStructure = {};
-
-        for (const entry of studentMasters) {
-            const {
-                departmentName,
-                levelName,
-                programName,
-                courseName,
-                semesterName,
-                sessionAcademicYear,
-                student
-            } = entry;
-
-            if (!nestedStructure[departmentName]) nestedStructure[departmentName] = {};
-            if (!nestedStructure[departmentName][levelName]) nestedStructure[departmentName][levelName] = {};
-            if (!nestedStructure[departmentName][levelName][programName]) nestedStructure[departmentName][levelName][programName] = {};
-            if (!nestedStructure[departmentName][levelName][programName][courseName]) nestedStructure[departmentName][levelName][programName][courseName] = {};
-            if (!nestedStructure[departmentName][levelName][programName][courseName][semesterName]) nestedStructure[departmentName][levelName][programName][courseName][semesterName] = {};
-            if (!nestedStructure[departmentName][levelName][programName][courseName][semesterName][sessionAcademicYear]) {
-                nestedStructure[departmentName][levelName][programName][courseName][semesterName][sessionAcademicYear] = [];
-            }
-
-            nestedStructure[departmentName][levelName][programName][courseName][semesterName][sessionAcademicYear].push(student);
-        }
-
         res.status(200).json({
             success: true,
-            message: "Nested student verify status fetched successfully",
-            data: nestedStructure
+            message: "Pending verification students fetched successfully",
+            totalStudents: groupedMasters.length,
+            data: groupedMasters
         });
     } catch (error) {
-        console.error("Error fetching nested student verify status:", error);
+        console.error("Error fetching pending verified students:", error); 
         res.status(500).json({ success: false, message: "Internal Server Error" });
     }
 });
 
 
-
-
-// update all students' verify status
-exports.updateOneStudentsVerifyStatus = catchAsync(async (req, res, next) => {
+// update one student verify status
+exports.updateOneStudentVerifyStatus = catchAsync(async (req, res, next) => {
     const { studentId, isVerified } = req.body;
 
-    if (!studentId || typeof isVerified !== 'boolean') {
-        return res.status(400).json({ success: false, message: "Invalid input. Please provide a valid studentId and verification status." });
+    if (!studentId || typeof isVerified !== 'number' || ![0, 1, 2].includes(isVerified)) {
+        return res.status(400).json({ success: false, message: "Invalid input. Please provide a valid studentId and verification status (0, 1, or 2)." });
     }
 
     try {

@@ -9,6 +9,11 @@ const teacherSchema = new mongoose.Schema({
   password: {
     type: String,
     required: true,
+  },
+  verified: { 
+    type: Number, 
+    enum: [0, 1, 2],  // 0: Pending, 1: Accepted, 2: Rejected
+    default: 0       
   }
 }, {
   timestamps: true

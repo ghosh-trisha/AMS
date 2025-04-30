@@ -34,6 +34,11 @@ const attendanceSchema = new mongoose.Schema({
   classDate: { 
     type: Date, 
     required: true 
+  },
+  classAttendanceId: {
+    type: String,
+    ref: 'ClassAttendance',
+    required: true
   }
 }, { 
   timestamps: true // This will add createdAt and updatedAt fields automatically

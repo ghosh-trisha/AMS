@@ -85,6 +85,10 @@ exports.loginTeacher = catchAsync(async (req, res, next) => {
         return next(new ApiError('Invalid credentials', 401));
     }
 
+    if (teacher.verified != 1) {
+        return next(new ApiError('Your account is not verified yet or rejected', 401));
+    }
+
     const accessToken = generateAccessToken(teacher);
     const refreshToken = generateRefreshToken(teacher);
 
