@@ -11,7 +11,7 @@ const StudentRoutes = () => (
         <Route path="/student/dashboard" element={<StudentDashboardPage />} />
         <Route path="/student/routine" element={<StudentRoutinePage />} />
         <Route path="/student/todayclasses/:id" element={<StudentTodayClassesPage/>} />
-        <Route path="/student/attendance/:id" element={<StudentAttendanceReportPage />} />
+        <Route path="/student/attendance/:studentId" element={<StudentAttendanceReportPage />} />
 
 
     </Routes> 

@@ -12,6 +12,6 @@ export const RoleProvider = ({ children }) => {
   );
 };
 
-export const useRole = () => {
+export const useRole = () => {                                                             
   return useContext(RoleContext);
 };

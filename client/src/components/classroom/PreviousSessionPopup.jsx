@@ -3,6 +3,7 @@ import axios from "axios";
 import RoutineTable from "./RoutineTable";
 import Loader from "../basic/Loader";
 import { motion, AnimatePresence } from "framer-motion";
+import AttendanceAll from "./AttendanceAll";
 
 const PreviousSessionPopup = ({ session, onClose, semesterId }) => {
     const [classroom, setClassroom] = useState(null);
@@ -128,6 +129,13 @@ const PreviousSessionPopup = ({ session, onClose, semesterId }) => {
                         <h3 className="text-xl font-semibold mb-4">Class Routine</h3>
                         <RoutineTable sessionId={session.id} />
                     </motion.div>
+
+                    {/* Attendance report section */}
+                    <div>
+                      <h4 className="text-lg font-semibold mb-4 text-green-800 bg-green-100 rounded-lg p-2">Attendance Report</h4>
+                      <AttendanceAll sessionId={session.id}/>
+                    </div>
+
                 </motion.div>
             </motion.div>
         </AnimatePresence>

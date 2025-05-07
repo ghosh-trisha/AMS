@@ -13,7 +13,7 @@ const classAttendanceSchema = new mongoose.Schema({
   },
   scheduleId: {
     type: String,
-    ref: "Routine",
+    ref: "Schedule",
     required: true,
   },
   sessionId: {

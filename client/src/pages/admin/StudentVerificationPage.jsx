@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import Select from "react-select"; // <-- Import Select
+import Select from "react-select"; 
 import axios from "axios";
 import toast from "react-hot-toast";
 import { motion } from "framer-motion";

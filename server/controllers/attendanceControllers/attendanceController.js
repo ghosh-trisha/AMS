@@ -1,13 +1,13 @@
-const catchAsync = require('../utils/catchAsync');
-const ApiError = require('../utils/ApiError');
-const Attendance = require('../models/Attendance');
-const Student = require('../models/Student');
-const Session = require('../models/Session');
-const Schedule = require('../models/Schedule');
-const Subject = require('../models/Subject');
+const catchAsync = require('../../utils/catchAsync');
+const ApiError = require('../../utils/ApiError');
+const Attendance = require('../../models/Attendance');
+const Student = require('../../models/Student');
+const Session = require('../../models/Session');
+const Schedule = require('../../models/Schedule');
+const Subject = require('../../models/Subject');
 const mongoose = require('mongoose');
-const Teacher = require('../models/Teacher');
-const ClassAttendance = require('../models/ClassAttendance');
+const Teacher = require('../../models/Teacher');
+const ClassAttendance = require('../../models/ClassAttendance');
 
 
 // Start a particular today's class attendance as a teacher
@@ -42,7 +42,7 @@ exports.startClassAttendence = catchAsync(async (req, res, next) => {
         subjectId,
         scheduleId,
         sessionId,
-        date: new Date(),
+        date: new Date(new Date().setHours(0, 0, 0, 0))
     });
 
     return res.status(201).json({
@@ -98,7 +98,7 @@ exports.createAttendanceRequestAsStudent = catchAsync(async (req, res, next) => 
         sessionId,
         scheduleId,
         subjectId,
-        classDate: new Date(),
+        classDate: new Date(new Date().setHours(0, 0, 0, 0)),
         classAttendanceId
     });
 

@@ -3,6 +3,7 @@ import axios from "axios";
 import RoutineTable from "./RoutineTable";
 import PreviousSessionPopup from "./PreviousSessionPopup";
 import { motion, AnimatePresence } from "framer-motion";
+import AttendanceAll from "./AttendanceAll";
 
 const SessionCard = ({ semesterId, setCurrSessionId }) => {
   const [showRoutine, setShowRoutine] = useState(false);
@@ -101,11 +102,11 @@ const SessionCard = ({ semesterId, setCurrSessionId }) => {
                     transition={{ duration: 0.4 }}
                     className="mt-4 space-y-6 overflow-hidden"
                   >
-                    <h4 className="text-lg font-semibold mb-4">Academic Year: {currentSession.academicYear}</h4>
+                    <h4 className="text-lg font-semibold mb-4 text-green-800 bg-green-100 rounded-lg p-2">Academic Year: {currentSession.academicYear}</h4>
 
                     {/* Subjects Display */}
                     <div>
-                      <h4 className="text-lg font-semibold mb-4">Subjects</h4>
+                      <h4 className="text-lg font-semibold mb-4 text-green-800 bg-green-100 rounded-lg p-2">Subjects</h4>
                       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                         <AnimatePresence>
                           {currentSession?.subjects?.length > 0 ? (
@@ -136,7 +137,18 @@ const SessionCard = ({ semesterId, setCurrSessionId }) => {
                       </div>
                     </div>
 
-                    <RoutineTable sessionId={sessionData.currentSession._id} />
+                    {/* Routine section */}
+                    <div>
+                      <h4 className="text-lg font-semibold mb-4 text-green-800 bg-green-100 rounded-lg p-2">Routine</h4>
+                      <RoutineTable sessionId={sessionData.currentSession._id} />
+                    </div>
+
+                    {/* Attendance report section */}
+                    <div>
+                      <h4 className="text-lg font-semibold mb-4 text-green-800 bg-green-100 rounded-lg p-2">Attendance Report</h4>
+                      <AttendanceAll sessionId={currentSession._id}/>
+                    </div>
+
                   </motion.div>
                 )}
               </AnimatePresence>

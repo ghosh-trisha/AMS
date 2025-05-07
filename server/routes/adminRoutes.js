@@ -12,6 +12,7 @@ const studentController =require('../controllers/studentController/studentContro
 const scheduleController = require('../controllers/adminControllers/scheduleController');
 const buildingController = require('../controllers/adminControllers/buildingController');
 const roomController = require('../controllers/adminControllers/roomController');
+const attendanceReportController = require('../controllers/attendanceControllers/attendanceReportController');
 const router = express.Router();
 
 
@@ -92,6 +93,10 @@ router.get('/building',buildingController.getAllBuildings );
 router.post('/room', roomController.createRoom);
 router.post('/room/available', roomController.getAvailableRooms);
 router.get('/room/:buildingId', roomController.getAllRoomsByBuilding);
+
+
+//! attendance report routes
+router.get('/attendance/all/:sessionId', attendanceReportController.getTotalAttendanceOfAllStudents);
 
 
 module.exports = router;
